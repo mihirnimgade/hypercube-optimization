@@ -18,10 +18,12 @@ fn main() {
     // HypercubeOptimizer will create mutable Hypercube object and manipulate it within a loop
     // HypercubeOptimizer.run() should take an objective function and bounds
 
+    const DIMENSION: usize = 6;
     let initial_point: &[f64] = &[1.0, 2.0, 4.2, 4.32, 5.7, 6.6];
-    let bounds: &[f64] = &[5.0, 4.0, 5.4, 6.2, 3.4, 3.2];
+    let lower_bound: &[f64; DIMENSION] = &[0.0; DIMENSION];
+    let upper_bound: &[f64; DIMENSION] = &[120.0; DIMENSION];
 
-    let cube = hypercube::Hypercube::new(initial_point, bounds);
+    let cube = hypercube::Hypercube::new(initial_point, upper_bound, lower_bound);
 
     println!("{}\n", cube);
 
