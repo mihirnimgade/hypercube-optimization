@@ -32,14 +32,14 @@ fn main() {
     // HypercubeOptimizer will create mutable Hypercube object and manipulate it within a loop
     // HypercubeOptimizer.run() should take an objective function and bounds
 
-    const DIMENSION: usize = 6;
-    let initial_point: &[f64] = &[1.0, 2.0, 4.2, 4.32, 5.7, 6.6];
-    let lower_bound: &[f64; DIMENSION] = &[0.0; DIMENSION];
-    let upper_bound: &[f64; DIMENSION] = &[120.0; DIMENSION];
+    let dimension: i64 = 10;
+    let lower_bound: f64 = 0.0;
+    let upper_bound: f64 = 120.0;
 
-    let cube = hypercube::Hypercube::new(initial_point, upper_bound, lower_bound);
+    // generate random initial point
+    let initial_point: Vec<f64> = generate_random_point(dimension, lower_bound, upper_bound);
 
-    println!("{}\n", cube);
+    let cube = hypercube::Hypercube::new(dimension, initial_point.clone(), upper_bound, lower_bound);
 
     let rastrigin_val: f64 = rastrigin(&initial_point);
     println!("{}", rastrigin_val);
