@@ -2,11 +2,12 @@ use std::f64::consts::PI;
 mod hypercube;
 
 // test function to be optimized
-fn rastrigin(input_vector: &[f64]) -> f64 {
+fn rastrigin(input_vector: &Vec<f64>) -> f64 {
     let dimension = input_vector.len();
     let mut sum: f64 = 0.0;
 
-    for &val in input_vector {
+    // iterating over slice of derefenced vector pointer
+    for val in &*input_vector {
         sum += val.powf(2.0) - (10.0 * (2.0*PI*val).cos());
     }
 
@@ -27,6 +28,6 @@ fn main() {
 
     println!("{}\n", cube);
 
-    println!("Input point: {:?}", initial_point);
-    println!("Rastrigin value: {}", rastrigin(initial_point));
+    let rastrigin_val: f64 = rastrigin(&initial_point);
+    println!("{}", rastrigin_val);
 }
