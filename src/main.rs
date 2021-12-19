@@ -17,6 +17,16 @@ fn rastrigin(input_vector: &Vec<f64>) -> f64 {
     10.0 * dimension as f64 + sum
 }
 
+// used to generate a random point with a given dimension and upper and lower bounds
+fn generate_random_point(dimension: i64, lower_bound: f64, upper_bound: f64) -> Vec<f64> {
+    let mut rng = thread_rng();
+    let uniform_range = Uniform::new_inclusive(lower_bound, upper_bound);
+    let random_point: Vec<f64> = (&mut rng).sample_iter(uniform_range)
+                                           .take(dimension.try_into().unwrap())
+                                           .collect();
+    random_point
+}
+
 fn main() {
     // create HypercubeOptimizer object here with certain parameters
     // HypercubeOptimizer will create mutable Hypercube object and manipulate it within a loop
