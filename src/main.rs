@@ -1,4 +1,7 @@
 use std::f64::consts::PI;
+use rand::{thread_rng, Rng};
+use rand::distributions::{Uniform};
+
 mod hypercube;
 
 // test function to be optimized
