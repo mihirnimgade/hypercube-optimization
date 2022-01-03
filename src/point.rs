@@ -5,8 +5,8 @@ unchangeable dimension which corresponds to the capacity of the underlying Vec<f
  */
 
 use crate::bounds::Bounds;
-use crate::hypercube::cmp;
 
+use std::cmp::Ordering;
 use std::ops::{Add, AddAssign, Sub};
 
 use rand::distributions::Uniform;
@@ -149,6 +149,11 @@ impl Point {
     pub fn iter(&self) -> Iter<'_, f64> {
         self.coords.iter()
     }
+}
+
+// comparision function to find max and min of Vec<f64>
+pub fn cmp(lhs: &f64, rhs: &f64) -> Ordering {
+    lhs.partial_cmp(rhs).unwrap()
 }
 
 /// Point creation macro
