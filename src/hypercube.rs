@@ -53,13 +53,16 @@ impl Hypercube {
         }
     }
 
-    // this method should mutate the Hypercube object
-    pub fn evaluate(&mut self, vector_function: fn(&Vec<f64>) -> f64) {
-        let mut values: Vec<f64> = Vec::new();
+    /*
+    Applies the vector function to all points in the population and stores it in the hypercube
+    object
+    */
+    pub fn evaluate(&mut self, point_function: fn(&Point) -> f64) {
+        let mut values: Vec<f64> = Vec::with_capacity(self.population_size as usize);
 
-        // iterate over population points
+        // iterate over population points and apply vector function
         for vec in &self.population {
-            values.push(vector_function(vec));
+            values.push(point_function(vec));
         }
 
         self.values = Some(values);
