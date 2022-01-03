@@ -1,49 +1,53 @@
 use std::fmt;
 
-use rand::{Rng, thread_rng};
-use rand::distributions::Uniform;
+use crate::bounds::Bounds;
+use std::cmp::Ordering;
+use crate::point::Point;
+use crate::point;
 
 pub struct Hypercube {
-    pub dimension: i64,
-    pub upper_bound: f64,
-    pub lower_bound: f64,
-    pub init_point: Vec<f64>,
-    population: Vec<Vec<f64>>,
-    pub values: Option<Vec<f64>>,
+    dimension: u32,
+    init_bounds: Bounds,
+    current_bounds: Bounds,
+    diagonal: f64,
+    center: Point,
+    population_size: u64,
+    population: Vec<Point>,
+    values: Option<Vec<f64>>,
 }
 
 impl Hypercube {
-    pub fn new(dimension: i64, init_point: Vec<f64>, upper_bound: f64, lower_bound: f64) -> Self {
-
-        // initial asserts to ensure arguments are the correct size
-        assert_eq!(dimension as usize, init_point.len(), "Dimension incompatible with initial point length");
-        assert_ne!(init_point.len(), 0, "Initial point is empty!");
+    pub fn new(dimension: u32, init_bounds: Bounds) -> Self {
+        assert_ne!(dimension, 0, "dimension cannot be zero");
 
         // TODO: replace with function that takes dimension and bounds and returns number of hypercube points
         let num_points = dimension;
 
-        let mut rng = thread_rng();
-        let uniform_range = Uniform::new_inclusive(lower_bound, upper_bound);
-
         // random point Vector to store random generated points
-        let mut random_points: Vec<Vec<f64>> = Vec::new();
+        let mut random_points: Vec<Point> = Vec::with_capacity(num_points as usize);
+
+        // calculate the hypercube's diagonal
+        let hypercube_diagonal: f64 = init_bounds.length;
 
         for _ in 0..num_points {
-            // generates random point using uniform distribution
-            let v: Vec<f64> = (&mut rng).sample_iter(uniform_range)
-                .take(dimension.try_into().unwrap())
-                .collect();
-
             // insert point into random_points vector
-            random_points.push(v);
+            random_points.push(Point::random(dimension, init_bounds));
         }
 
-        // return Hypercube object/struct
+        let population_size = random_points.len() as u64;
+
+        // generate center vector
+        let central_value: f64 = (init_bounds.lower + init_bounds.upper) / 2.0;
+        let center: Point = point![central_value; dimension];
+
+        // return Hypercube struct
         Self {
             dimension,
-            init_point,
-            upper_bound,
-            lower_bound,
+            init_bounds,
+            current_bounds: init_bounds,
+            diagonal: hypercube_diagonal,
+            center,
+            population_size,
             population: random_points,
             values: None,
         }
