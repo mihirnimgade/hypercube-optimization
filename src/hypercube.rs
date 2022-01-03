@@ -71,8 +71,16 @@ impl Hypercube {
 
 impl fmt::Display for Hypercube {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Initial point: {:#?}\nDimension: {}\nLower bound: {:?}\nUpper bound: {:?}\nPopulation points: {:#?}\nValues: {:#?}\n",
-               self.init_point, self.dimension, self.lower_bound, self.upper_bound, self.population,
-               self.values)
+        write!(
+            f,
+            "Dimension: {}\nLower bound: {:?}\nUpper bound: {:?}\
+            \nCenter: {:?}\nPopulation size: {}\nValues: {:#?}\n",
+            self.dimension,
+            self.init_bounds.lower,
+            self.init_bounds.upper,
+            self.center,
+            self.population_size,
+            self.values
+        )
     }
 }
