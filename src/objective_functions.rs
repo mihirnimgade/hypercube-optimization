@@ -3,13 +3,13 @@
 pub mod objective_functions {
 
     use std::f64::consts::PI;
+    use crate::point::Point;
 
-    pub fn rastrigin(input_vector: &Vec<f64>) -> f64 {
-        let dimension = input_vector.len();
+    pub fn rastrigin(input_point: &Point) -> f64 {
+        let dimension = input_point.dim();
         let mut sum: f64 = 0.0;
 
-        // iterating over slice of derefenced vector pointer
-        for val in &*input_vector {
+        for val in input_point.iter() {
             sum += val.powf(2.0) - (10.0 * (2.0*PI*val).cos());
         }
 
