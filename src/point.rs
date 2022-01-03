@@ -14,7 +14,7 @@ use rand::{thread_rng, Rng};
 
 use std::slice::Iter;
 
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, PartialOrd, PartialEq, Clone)]
 pub struct Point {
     dimension: u32,
     length: f64,
