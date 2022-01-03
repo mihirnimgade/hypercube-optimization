@@ -1,39 +1,29 @@
-use rand::{Rng, thread_rng};
-use rand::distributions::Uniform;
-
 use crate::objective_functions::objective_functions::rastrigin;
+use crate::point::Point;
 
 mod hypercube;
 mod objective_functions;
-
-// used to generate a random point with a given dimension and upper and lower bounds
-fn generate_random_point(dimension: i64, lower_bound: f64, upper_bound: f64) -> Vec<f64> {
-    let mut rng = thread_rng();
-    let uniform_range = Uniform::new_inclusive(lower_bound, upper_bound);
-    let random_point: Vec<f64> = (&mut rng).sample_iter(uniform_range)
-        .take(dimension.try_into().unwrap())
-        .collect();
-    random_point
-}
+mod bounds;
+mod point;
 
 fn main() {
     // create HypercubeOptimizer object here with certain parameters
     // HypercubeOptimizer will create mutable Hypercube object and manipulate it within a loop
     // HypercubeOptimizer.run() should take an objective function and bounds
 
-    let dimension: i64 = 1000;
-    let lower_bound: f64 = 0.0;
-    let upper_bound: f64 = 120.0;
+    let dimension: u32 = 3;
+    let init_bounds = bounds::Bounds::new(0.0, 120.0);
 
-    // generate random initial point
-    let initial_point: Vec<f64> = generate_random_point(dimension, lower_bound, upper_bound);
-
-    let mut cube = hypercube::Hypercube::new(dimension, initial_point.clone(), upper_bound, lower_bound);
+    let mut cube = hypercube::Hypercube::new(dimension, init_bounds);
 
     cube.evaluate(rastrigin);
 
-    match cube.values {
-        Some(_t) => println!("All values evaluated!"),
-        None => println!("Values not evaluated.")
+    let destination: Point = point![23.2, 12.2, 32.4];
+
+    let displacement_result = cube.displace(&destination);
+
+    match displacement_result {
+        Ok(()) => println!("displacement successful"),
+        Err(message) => println!("{}", message)
     }
 }
