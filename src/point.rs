@@ -14,10 +14,9 @@ use rand::{thread_rng, Rng};
 
 use std::slice::Iter;
 
-#[derive(Debug, PartialOrd, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Point {
-    dimension: u32,
-    length: f64,
+    pub dimension: u32,
     coords: Vec<f64>,
 }
 
@@ -93,34 +92,36 @@ impl Point {
 
         let coords: Vec<f64> = vector;
 
-        // compute mathematical length
-        let length = coords.iter().fold(0.0, |acc, x| acc + (x * x)).sqrt();
-
         Self {
             dimension: coords.len() as u32,
-            length,
-            coords,
+            coords
         }
     }
 
-    /// Creates a Point and initializes its coordinates with `element` and a dimension of `n`.
+    /// Creates a `Point` and initializes its coordinates with `element` and a dimension of `n`.
     pub fn fill(element: f64, n: u32) -> Self {
-        let coords = vec![element; n as usize];
+        assert_ne!(n, 0, "vector dimension cannot be zero");
 
-        // compute length
-        let length = coords.iter().fold(0.0, |acc, x| acc + (x * x)).sqrt();
+        let coords = vec![element; n as usize];
 
         Self {
             dimension: n,
-            length,
-            coords,
+            coords
         }
     }
 
-    /// Creates a Point with random coordinates within given bounds.
-    pub fn random(dimension: u32, bounds: Bounds) -> Self {
+    /// Calculates the mathematical length of the `Point` from the origin
+    pub fn len(&self) -> f64 {
+        self.coords.iter().fold(0.0, |acc, x| acc + x.powf(2.0)).sqrt()
+    }
+
+    /// Creates a `Point` with random coordinates within given bounds.
+    pub fn random(dimension: u32, lower: f64, upper: f64) -> Self {
+        assert_ne!(dimension, 0, "vector dimension cannot be zero");
+        assert!(upper > lower, "upper bound not strictly bigger than lower bound");
+
         let mut rng = thread_rng();
-        let uniform_range = Uniform::new_inclusive(bounds.lower, bounds.upper);
+        let uniform_range = Uniform::new_inclusive(lower, upper);
 
         let random_vec: Vec<f64> = (&mut rng)
             .sample_iter(uniform_range)
@@ -128,10 +129,6 @@ impl Point {
             .collect();
 
         Self::from_vec(random_vec)
-    }
-
-    pub fn dim(&self) -> u32 {
-        self.dimension
     }
 
     pub fn get(&self, index: usize) -> Option<&f64> {
@@ -173,20 +170,29 @@ macro_rules! point {
 }
 
 #[cfg(test)]
-mod point_tests {
-    use crate::point::Point;
+mod tests {
+    use super::*;
 
     #[test]
-    fn make_new_point_by_fill() {
-        assert_eq!(Point::fill(4.3, 10), Point::fill(4.3, 10));
+    fn make_new_point_by_fill_1() {
+        let a = Point::fill(4.3, 10);
+        let b = Point {
+            dimension: 10,
+            coords: vec![4.3; 10]
+        };
+
+        assert_eq!(a, b);
     }
 
     #[test]
-    fn make_new_point_from_vec() {
-        assert_eq!(
-            Point::from_vec(vec![5.2, 4.5, 33.2]),
-            Point::from_vec(vec![5.2, 4.5, 33.2])
-        );
+    fn make_new_point_from_vec_1() {
+        let a = Point::from_vec(vec![5.2, 4.5, 3.2]);
+        let b = Point {
+            dimension: 3,
+            coords: vec![5.2, 4.5, 3.2]
+        };
+
+        assert_eq!(a, b);
     }
 
     #[test]
@@ -215,7 +221,7 @@ mod point_tests {
 
         let expected_length = (3.0_f64).sqrt();
 
-        assert_eq!(a.length, expected_length);
+        assert_eq!(a.len(), expected_length);
     }
 
     #[test]
@@ -224,7 +230,7 @@ mod point_tests {
 
         let expected_length = (87.0_f64).sqrt();
 
-        assert_eq!(a.length, expected_length);
+        assert_eq!(a.len(), expected_length);
     }
 
     #[test]
@@ -233,7 +239,16 @@ mod point_tests {
 
         let expected_length = (791569.27_f64).sqrt();
 
-        assert_eq!(a.length, expected_length);
+        assert_eq!(a.len(), expected_length);
+    }
+
+    #[test]
+    fn compute_length_4() {
+        let a = Point::fill(4.0, 5);
+
+        let expected_length = (80.0_f64).sqrt();
+
+        assert_eq!(a.len(), expected_length);
     }
 
     #[test]
