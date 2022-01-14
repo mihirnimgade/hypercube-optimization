@@ -141,7 +141,17 @@ impl Point {
     pub fn iter(&self) -> Iter<'_, f64> {
         self.coords.iter()
     }
+
+    /// Scales the point by scale factor
+    pub fn scale(&mut self, scale_factor: f64) {
+        // scale elements
+        for element in self.coords.iter_mut() {
+            *element *= scale_factor;
+        }
+    }
 }
+
+/// Comparison function
 
 // comparision function to find max and min of Vec<f64>
 pub fn cmp(lhs: &f64, rhs: &f64) -> Ordering {
