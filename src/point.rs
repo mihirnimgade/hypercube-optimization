@@ -190,6 +190,12 @@ mod tests {
     }
 
     #[test]
+    #[should_panic]
+    fn make_new_point_by_fill_2() {
+        let _a = Point::fill(4.3, 0);
+    }
+
+    #[test]
     fn make_new_point_from_vec_1() {
         let a = Point::from_vec(vec![5.2, 4.5, 3.2]);
         let b = Point {
@@ -198,6 +204,30 @@ mod tests {
         };
 
         assert_eq!(a, b);
+    }
+
+    #[test]
+    #[should_panic]
+    fn make_new_point_from_vec_2() {
+        let _a = Point::from_vec(Vec::new());
+    }
+
+    #[test]
+    #[should_panic]
+    fn make_new_point_random_1() {
+        let _a = Point::random(0, 0.0, 10.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn make_new_point_random_2() {
+        let _a = Point::random(10, 10.0, 0.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn make_new_point_random_3() {
+        let _a = Point::random(10, 10.0, 10.0);
     }
 
     #[test]
@@ -294,5 +324,41 @@ mod tests {
         a += b;
 
         assert_eq!(a, point![10.0; 10]);
+    }
+
+    #[test]
+    fn scale_1() {
+        let mut a = point![2.0, 4.0, 6.0, 8.0];
+
+        a.scale(0.5);
+
+        assert_eq!(a, point![1.0, 2.0, 3.0, 4.0]);
+    }
+
+    #[test]
+    fn scale_2() {
+        let mut a = point![2.0, 4.0, 6.0, 8.0];
+
+        a.scale(-0.5);
+
+        assert_eq!(a, point![-1.0, -2.0, -3.0, -4.0]);
+    }
+
+    #[test]
+    fn scale_3() {
+        let mut a = point![2.0, 4.0, 6.0, 8.0];
+
+        a.scale(0.0);
+
+        assert_eq!(a, point![0.0, 0.0, 0.0, 0.0]);
+    }
+
+    #[test]
+    fn scale_4() {
+        let mut a = point![2.0, 4.0, 6.0, 8.0];
+
+        a.scale(2.0);
+
+        assert_eq!(a, point![4.0, 8.0, 12.0, 16.0]);
     }
 }
