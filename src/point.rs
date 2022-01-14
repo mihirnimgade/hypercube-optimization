@@ -20,12 +20,12 @@ pub struct Point {
     coords: Vec<f64>,
 }
 
-/// Operation trait implementations
+/// Trait implementations for mathematical operations
 
-impl Add for Point {
-    type Output = Self;
+impl<'a, 'b> Add<&'b Point> for &'a Point {
+    type Output = Point;
 
-    fn add(self, other: Self) -> Self {
+    fn add(self, other: &'b Point) -> Point {
         // points need to have the same dimension to be added
         assert_eq!(
             self.dimension, other.dimension,
@@ -42,27 +42,14 @@ impl Add for Point {
             add_result.push(element + other.get(index).unwrap());
         }
 
-        Self::from_vec(add_result)
+        Point::from_vec(add_result)
     }
 }
 
-impl AddAssign for Point {
-    fn add_assign(&mut self, rhs: Self) {
-        for (index, element) in self.coords.iter_mut().enumerate() {
-            *element += rhs.coords.get(index).unwrap();
-        }
+impl<'a, 'b> Sub<&'b Point> for &'a Point {
+    type Output = Point;
 
-        // recompute mathematical length
-        let length = self.coords.iter().fold(0.0, |acc, x| acc + (x * x)).sqrt();
-
-        self.length = length;
-    }
-}
-
-impl Sub for Point {
-    type Output = Self;
-
-    fn sub(self, other: Self) -> Self {
+    fn sub(self, other: &'b Point) -> Point {
         // points need to have the same dimension to be subtracted
         assert_eq!(
             self.dimension, other.dimension,
@@ -79,7 +66,15 @@ impl Sub for Point {
             sub_result.push(element - other.get(index).unwrap());
         }
 
-        Self::from_vec(sub_result)
+        Point::from_vec(sub_result)
+    }
+}
+
+impl AddAssign for Point {
+    fn add_assign(&mut self, rhs: Self) {
+        for (index, element) in self.coords.iter_mut().enumerate() {
+            *element += rhs.coords.get(index).unwrap();
+        }
     }
 }
 
@@ -196,23 +191,23 @@ mod tests {
     }
 
     #[test]
-    fn adding_two_points_1() {
+    fn adding_two_point_refs_1() {
         let a = point![1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
         let b = point![1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
 
         let c = point![2.0, 4.0, 6.0, 8.0, 10.0, 12.0];
 
-        assert_eq!(a + b, c);
+        assert_eq!(&a + &b, c);
     }
 
     #[test]
-    fn adding_two_points_2() {
+    fn adding_two_point_refs_2() {
         let a = point![129.0, 1211.3, 492.2];
         let b = point![677.3, 4453.2, 223.1];
 
         let c = Point::from_vec(vec![129.0 + 677.3, 1211.3 + 4453.2, 492.2 + 223.1]);
 
-        assert_eq!(a + b, c);
+        assert_eq!(&a + &b, c);
     }
 
     #[test]
@@ -258,7 +253,7 @@ mod tests {
 
         let c = point![0.0; 6];
 
-        assert_eq!(a - b, c);
+        assert_eq!(&a - &b, c);
     }
 
     #[test]
@@ -268,7 +263,7 @@ mod tests {
 
         let c = point![0.0; 5];
 
-        assert_eq!(a - b, c);
+        assert_eq!(&a - &b, c);
     }
 
     #[test]
