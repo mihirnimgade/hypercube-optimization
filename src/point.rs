@@ -4,8 +4,6 @@ added, subtracted, multiplied, and divided. Once a point is created, it has a de
 unchangeable dimension which corresponds to the capacity of the underlying Vec<f64> attribute.
  */
 
-use crate::bounds::Bounds;
-
 use std::cmp::Ordering;
 use std::ops::{Add, AddAssign, Sub};
 
