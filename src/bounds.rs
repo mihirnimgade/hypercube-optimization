@@ -1,18 +1,34 @@
 /*
-Defines the Bounds struct for use inside the Hypercube implementation
+Defines the HypercubeBounds struct along with its functions for use inside the Hypercube
+implementation.
  */
 
-#[derive(Clone, Copy)]
-pub struct Bounds {
-    pub lower: f64,
-    pub upper: f64,
-    pub length: f64
+use crate::point;
+use crate::point::Point;
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct HypercubeBounds {
+    lower: Point,
+    upper: Point
 }
 
-impl Bounds {
-    pub fn new(lower: f64, upper: f64) -> Self {
-        // ensure upper bound is larger than lower bound
-        assert!(upper > lower, "Lower bound is bigger than upper bound or bound is empty.");
+impl HypercubeBounds {
+
+    /// Creates a new HypercubeBounds struct
+    pub fn new(dimension: u32, lower: f64, upper: f64) -> Self {
+        assert!(upper > lower, "upper bound is not strictly bigger than lower bound");
+        assert_ne!(dimension, 0, "dimension cannot be zero");
+
+        Self {
+            lower: point![lower; dimension],
+            upper: point![upper; dimension],
+        }
+    }
+
+    /// Creates a new HypercubeBounds struct from points; intended for internal testing
+    fn from_points(lower: Point, upper: Point) -> Self {
+        // ensure lower and upper Point dimensions are equivalent
+        assert_eq!(lower.dimension, lower.dimension);
 
         Self {
             lower,
