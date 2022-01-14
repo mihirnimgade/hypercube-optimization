@@ -69,3 +69,31 @@ impl HypercubeBounds {
     }
 
 }
+
+mod tests {
+    use super::*;
+
+    #[test]
+    fn make_new_bounds_1() {
+        let a = HypercubeBounds::new(5, 0.0, 10.0);
+
+        let b = HypercubeBounds {
+            lower: Point::fill(0.0, 5),
+            upper: Point::fill(10.0, 5),
+        };
+
+        assert_eq!(a, b);
+    }
+
+    #[test]
+    #[should_panic]
+    fn make_new_bounds_2() {
+        let _a = HypercubeBounds::new(5, 10.0, 0.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn make_new_bounds_3() {
+        let _a = HypercubeBounds::new(5, 10.0, 10.0);
+    }
+}
