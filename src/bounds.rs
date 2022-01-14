@@ -33,7 +33,39 @@ impl HypercubeBounds {
         Self {
             lower,
             upper,
-            length: upper - lower
         }
     }
+
+    /// Checks if lhs bound is completely inside rhs bound
+    pub fn within(&self, rhs: &Self) -> bool {
+
+        // check upper bound
+        for (index, element) in self.upper.iter().enumerate() {
+            // if self.upper element is bigger than rhs.upper element...
+            if element > rhs.upper.get(index).unwrap() {
+                return false;
+            }
+        }
+
+        // check lower bound
+        for (index, element) in self.lower.iter().enumerate() {
+            if element < rhs.lower.get(index).unwrap() {
+                return false;
+            }
+        }
+
+        true
+    }
+
+    /// Displaces hypercube bounds by `vector`
+    pub fn displace_by(&mut self, vector: &Point) -> Self {
+        let new_upper: Point = &self.upper + vector;
+        let new_lower: Point = &self.lower + vector;
+
+        Self {
+            lower: new_lower,
+            upper: new_upper
+        }
+    }
+
 }
