@@ -105,13 +105,19 @@ impl Point {
 
     /// Calculates the mathematical length of the `Point` from the origin
     pub fn len(&self) -> f64 {
-        self.coords.iter().fold(0.0, |acc, x| acc + x.powf(2.0)).sqrt()
+        self.coords
+            .iter()
+            .fold(0.0, |acc, x| acc + x.powf(2.0))
+            .sqrt()
     }
 
     /// Creates a `Point` with random coordinates within given bounds.
     pub fn random(dimension: u32, lower: f64, upper: f64) -> Self {
         assert_ne!(dimension, 0, "vector dimension cannot be zero");
-        assert!(upper > lower, "upper bound not strictly bigger than lower bound");
+        assert!(
+            upper > lower,
+            "upper bound not strictly bigger than lower bound"
+        );
 
         let mut rng = thread_rng();
         let uniform_range = Uniform::new_inclusive(lower, upper);
