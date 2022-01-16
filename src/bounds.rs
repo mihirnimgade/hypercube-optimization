@@ -13,10 +13,12 @@ pub struct HypercubeBounds {
 }
 
 impl HypercubeBounds {
-
     /// Creates a new HypercubeBounds struct
     pub fn new(dimension: u32, lower: f64, upper: f64) -> Self {
-        assert!(upper > lower, "upper bound is not strictly bigger than lower bound");
+        assert!(
+            upper > lower,
+            "upper bound is not strictly bigger than lower bound"
+        );
         assert_ne!(dimension, 0, "dimension cannot be zero");
 
         Self {
@@ -29,16 +31,12 @@ impl HypercubeBounds {
     fn from_points(lower: Point, upper: Point) -> Self {
         // ensure lower and upper Point dimensions are equivalent
         assert_eq!(lower.dimension, lower.dimension);
-
-        Self {
-            lower,
-            upper,
-        }
+        Self { lower, upper }
     }
 
-    /// Checks if lhs bound is completely inside rhs bound
+    /// Checks if lhs bound is completely inside rhs bound. This means that the lhs bound is a
+    /// subset of the rhs bound. This implies the bounds can also be equal.
     pub fn within(&self, rhs: &Self) -> bool {
-
         // check upper bound
         for (index, element) in self.upper.iter().enumerate() {
             // if self.upper element is bigger than rhs.upper element...
@@ -58,16 +56,23 @@ impl HypercubeBounds {
     }
 
     /// Displaces hypercube bounds by `vector`
-    pub fn displace_by(&mut self, vector: &Point) -> Self {
-        let new_upper: Point = &self.upper + vector;
-        let new_lower: Point = &self.lower + vector;
-
+    pub fn displace_by(&self, vector: &Point) -> Self {
         Self {
-            lower: new_lower,
-            upper: new_upper
+            lower: &self.lower + vector,
+            upper: &self.upper + vector
         }
     }
 
+    /// Displaces hypercube bounds by `vector` in-place
+    pub fn displace_by_in_place(&mut self, vector: &Point) {
+        self.lower = &self.lower + vector;
+        self.upper = &self.upper + vector;
+    }
+
+    pub fn scale(&mut self, scale_factor: f64) {
+        self.lower.scale(scale_factor);
+        self.upper.scale(scale_factor);
+    }
 }
 
 mod tests {
