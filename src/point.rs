@@ -177,7 +177,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn make_new_point_by_fill_1() {
+    fn new_point_by_fill_1() {
         let a = Point::fill(4.3, 10);
         let b = Point {
             dimension: 10,
@@ -189,12 +189,12 @@ mod tests {
 
     #[test]
     #[should_panic]
-    fn make_new_point_by_fill_2() {
+    fn new_point_by_fill_2() {
         let _a = Point::fill(4.3, 0);
     }
 
     #[test]
-    fn make_new_point_from_vec_1() {
+    fn new_point_from_vec_1() {
         let a = Point::from_vec(vec![5.2, 4.5, 3.2]);
         let b = Point {
             dimension: 3,
@@ -206,25 +206,25 @@ mod tests {
 
     #[test]
     #[should_panic]
-    fn make_new_point_from_vec_2() {
+    fn new_point_from_vec_2() {
         let _a = Point::from_vec(Vec::new());
     }
 
     #[test]
     #[should_panic]
-    fn make_new_point_random_1() {
+    fn new_point_random_2() {
         let _a = Point::random(0, 0.0, 10.0);
     }
 
     #[test]
     #[should_panic]
-    fn make_new_point_random_2() {
+    fn new_point_random_3() {
         let _a = Point::random(10, 10.0, 0.0);
     }
 
     #[test]
     #[should_panic]
-    fn make_new_point_random_3() {
+    fn new_point_random_4() {
         let _a = Point::random(10, 10.0, 10.0);
     }
 
