@@ -211,6 +211,13 @@ mod tests {
     }
 
     #[test]
+    fn new_point_random_1() {
+        let a = Point::random(3, 0.0, 10.0);
+
+        assert_eq!(a.dimension, 3);
+    }
+
+    #[test]
     #[should_panic]
     fn new_point_random_2() {
         let _a = Point::random(0, 0.0, 10.0);
