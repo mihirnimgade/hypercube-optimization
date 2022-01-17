@@ -87,7 +87,7 @@ impl Point {
 
         Self {
             dimension: coords.len() as u32,
-            coords
+            coords,
         }
     }
 
@@ -99,7 +99,7 @@ impl Point {
 
         Self {
             dimension: n,
-            coords
+            coords,
         }
     }
 
@@ -146,12 +146,20 @@ impl Point {
         self.coords.iter()
     }
 
-    /// Scales the point by scale factor
-    pub fn scale(&mut self, scale_factor: f64) {
+    /// Scales the point by scale factor in-place
+    pub fn scale_in_place(&mut self, scale_factor: f64) {
         // scale elements
         for element in self.coords.iter_mut() {
             *element *= scale_factor;
         }
+    }
+
+    /// Scales point by scale factor and returns new point
+    pub fn scale(&self, scale_factor: f64) -> Self {
+        // TODO: could implement this better
+        let mut result = self.clone();
+        result.scale_in_place(scale_factor);
+        result
     }
 }
 
@@ -187,7 +195,7 @@ mod tests {
         let a = Point::fill(4.3, 10);
         let b = Point {
             dimension: 10,
-            coords: vec![4.3; 10]
+            coords: vec![4.3; 10],
         };
 
         assert_eq!(a, b);
@@ -204,7 +212,7 @@ mod tests {
         let a = Point::from_vec(vec![5.2, 4.5, 3.2]);
         let b = Point {
             dimension: 3,
-            coords: vec![5.2, 4.5, 3.2]
+            coords: vec![5.2, 4.5, 3.2],
         };
 
         assert_eq!(a, b);
@@ -338,38 +346,70 @@ mod tests {
     }
 
     #[test]
-    fn scale_1() {
+    fn scale_in_place_1() {
         let mut a = point![2.0, 4.0, 6.0, 8.0];
 
-        a.scale(0.5);
+        a.scale_in_place(0.5);
 
         assert_eq!(a, point![1.0, 2.0, 3.0, 4.0]);
     }
 
     #[test]
-    fn scale_2() {
+    fn scale_in_place_2() {
         let mut a = point![2.0, 4.0, 6.0, 8.0];
 
-        a.scale(-0.5);
+        a.scale_in_place(-0.5);
 
         assert_eq!(a, point![-1.0, -2.0, -3.0, -4.0]);
     }
 
     #[test]
-    fn scale_3() {
+    fn scale_in_place_3() {
         let mut a = point![2.0, 4.0, 6.0, 8.0];
 
-        a.scale(0.0);
+        a.scale_in_place(0.0);
 
         assert_eq!(a, point![0.0, 0.0, 0.0, 0.0]);
     }
 
     #[test]
-    fn scale_4() {
+    fn scale_in_place_4() {
         let mut a = point![2.0, 4.0, 6.0, 8.0];
 
-        a.scale(2.0);
+        a.scale_in_place(2.0);
 
         assert_eq!(a, point![4.0, 8.0, 12.0, 16.0]);
+    }
+
+    #[test]
+    fn scale_1() {
+        let a = point![2.0, 4.0, 6.0, 8.0];
+        let b = a.scale(0.5);
+
+        assert_eq!(b, point![1.0, 2.0, 3.0, 4.0]);
+    }
+
+    #[test]
+    fn scale_2() {
+        let a = point![2.0, 4.0, 6.0, 8.0];
+        let b = a.scale(-0.5);
+
+        assert_eq!(b, point![-1.0, -2.0, -3.0, -4.0]);
+    }
+
+    #[test]
+    fn scale_3() {
+        let a = point![2.0, 4.0, 6.0, 8.0];
+        let b = a.scale(0.0);
+
+        assert_eq!(b, point![0.0, 0.0, 0.0, 0.0]);
+    }
+
+    #[test]
+    fn scale_4() {
+        let a = point![2.0, 4.0, 6.0, 8.0];
+        let b = a.scale(2.0);
+
+        assert_eq!(b, point![4.0, 8.0, 12.0, 16.0]);
     }
 }
