@@ -142,6 +142,12 @@ mod tests {
     }
 
     #[test]
+    fn check_upper_lower_dim() {
+        let a = HypercubeBounds::new(3, 0.0, 120.0);
+        assert_eq!(a.lower.dimension, a.upper.dimension);
+    }
+
+    #[test]
     fn within_equal() {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
 
@@ -289,5 +295,14 @@ mod tests {
         let center = point![60.0; 3];
 
         let _b = a.shrink_towards_center(&center, -0.1);
+    }
+
+    #[test]
+    #[should_panic]
+    fn shrink_towards_center_6() {
+        let a = HypercubeBounds::new(3, 0.0, 120.0);
+        let center = point![60.0; 4];
+
+        let _b = a.shrink_towards_center(&center, 0.7);
     }
 }
