@@ -108,6 +108,34 @@ impl Hypercube {
             Err("cannot displace, displacement results in hypercube out of bounds")
         }
     }
+
+    /*
+    Shrinks the radius of the hypercube by multiplying it with the factor argument.
+     */
+    pub fn shrink(&mut self, factor: f64) {
+        assert!(factor > 0.0, "factor cannot be less than zero");
+        assert!(factor <= 1.0, "factor cannot be more than one");
+
+        // resize diagonal
+        self.diagonal.scale(factor);
+
+        // TODO: figure out if diagonal should be scaled or calculated from current_bounds
+
+        // resize current bounds
+        self.current_bounds = self
+            .current_bounds
+            .shrink_towards_center(&self.center, factor);
+
+        // resize population points
+        for point in self.population.iter_mut() {
+            point.shrink_towards_center_in_place(&self.center, factor);
+        }
+
+        // could also iterate over population points and map closure onto them
+
+        // clear previous evaluation values
+        self.values = None;
+    }
 }
 
 impl fmt::Display for Hypercube {
