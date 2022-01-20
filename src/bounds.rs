@@ -98,6 +98,10 @@ impl HypercubeBounds {
             upper: new_upper,
         }
     }
+
+    pub fn get_diagonal(&self) -> Point {
+        &self.upper - &self.lower
+    }
 }
 
 mod tests {
