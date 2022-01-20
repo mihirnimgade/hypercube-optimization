@@ -46,7 +46,7 @@ impl Hypercube {
         let population_size = random_points.len() as u64;
 
         // generate center vector
-        let central_value: f64 = (upper_bound - lower_bound) / 2.0;
+        let central_value: f64 = (upper_bound + lower_bound) / 2.0;
         let center: Point = point![central_value; dimension];
 
         // return Hypercube struct
