@@ -1,14 +1,15 @@
+use std::collections::BinaryHeap;
 use std::fmt;
 
-use crate::bounds::Bounds;
-use crate::point::Point;
+use crate::bounds::HypercubeBounds;
 use crate::point;
+use crate::point::Point;
 
 pub struct Hypercube {
     dimension: u32,
-    init_bounds: Bounds,
-    current_bounds: Bounds,
-    diagonal: f64,
+    init_bounds: HypercubeBounds,
+    current_bounds: HypercubeBounds,
+    diagonal: Point,
     center: Point,
     population_size: u64,
     population: Vec<Point>,
@@ -16,8 +17,16 @@ pub struct Hypercube {
 }
 
 impl Hypercube {
-    pub fn new(dimension: u32, init_bounds: Bounds) -> Self {
+    pub fn new(dimension: u32, lower_bound: f64, upper_bound: f64) -> Self {
         assert_ne!(dimension, 0, "dimension cannot be zero");
+        assert!(
+            upper_bound > lower_bound,
+            "upper bound is not strictly larger than lower bound"
+        );
+
+        // generate initial bounds struct
+        let init_bounds: HypercubeBounds =
+            HypercubeBounds::new(dimension, lower_bound, upper_bound);
 
         // TODO: replace with function that takes dimension and bounds and returns number of hypercube points
         let num_points = dimension;
@@ -26,24 +35,25 @@ impl Hypercube {
         let mut random_points: Vec<Point> = Vec::with_capacity(num_points as usize);
 
         // calculate the hypercube's diagonal
-        let hypercube_diagonal: f64 = init_bounds.length;
+        let hypercube_diagonal: Point =
+            &point![upper_bound; dimension] - &point![lower_bound; dimension];
 
         for _ in 0..num_points {
             // insert point into random_points vector
-            random_points.push(Point::random(dimension, init_bounds));
+            random_points.push(Point::random(dimension, lower_bound, upper_bound));
         }
 
         let population_size = random_points.len() as u64;
 
         // generate center vector
-        let central_value: f64 = (init_bounds.lower + init_bounds.upper) / 2.0;
+        let central_value: f64 = (upper_bound - lower_bound) / 2.0;
         let center: Point = point![central_value; dimension];
 
         // return Hypercube struct
         Self {
             dimension,
-            init_bounds,
-            current_bounds: init_bounds,
+            init_bounds: init_bounds.clone(),
+            current_bounds: init_bounds.clone(),
             diagonal: hypercube_diagonal,
             center,
             population_size,
