@@ -57,7 +57,7 @@ impl Hypercube {
     object
     */
     pub fn evaluate(&mut self, point_function: fn(&Point) -> f64) {
-        let mut values: Vec<f64> = Vec::with_capacity(self.population_size as usize);
+        let mut values = Vec::with_capacity(self.population_size as usize);
 
         // iterate over population points and apply vector function
         for vec in &self.population {
