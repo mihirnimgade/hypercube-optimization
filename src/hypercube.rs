@@ -121,11 +121,6 @@ impl Hypercube {
         assert!(factor > 0.0, "factor cannot be less than zero");
         assert!(factor <= 1.0, "factor cannot be more than one");
 
-        // resize diagonal
-        self.diagonal.scale(factor);
-
-        // TODO: figure out if diagonal should be scaled or calculated from current_bounds
-
         // resize current bounds
         self.current_bounds = self
             .current_bounds
@@ -137,6 +132,9 @@ impl Hypercube {
         }
 
         // could also iterate over population points and map closure onto them
+
+        // recalculate diagonal
+        self.diagonal = self.current_bounds.get_diagonal();
 
         // clear previous evaluation values
         self.values = None;
