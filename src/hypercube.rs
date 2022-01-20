@@ -71,34 +71,29 @@ impl Hypercube {
     Displaces the hypercube by moving the center to the destination argument. Returns a Result
     object to indicate whether the displacement was successful or not.
      */
-    pub fn displace(&mut self, destination: &Point) -> Result<(), &'static str> {
+    pub fn displace_by(&mut self, vector: &Point) -> Result<(), &'static str> {
+        // TODO: write test functions for this
+
         // ensures the destination vector is the correct dimension
         assert_eq!(
-            destination.dim() as u32,
-            self.dimension,
-            "Destination is not the correct dimension. \
-            Expected {}, got {}.",
-            self.dimension,
-            destination.dim()
+            vector.dimension as u32, self.dimension,
+            "destination is not the correct dimension. \
+            expected {}, got {}.",
+            self.dimension, vector.dimension
         );
 
-        // find maximum value in the destination vector
-        let max_destination_element = destination.max_val().unwrap();
-        let min_destination_element = destination.min_val().unwrap();
-
         // test adding destination vector to current bounds
-        let new_upper_bound = max_destination_element + self.current_bounds.upper;
-        let new_lower_bound = min_destination_element + self.current_bounds.lower;
+        let new_bounds: HypercubeBounds = self.current_bounds.displace_by(vector);
 
         // if within bounds
-        if new_lower_bound >= self.init_bounds.lower && new_upper_bound <= self.init_bounds.upper {
-            // alter population values
+        if self.current_bounds.within(&new_bounds) {
+            // add vector to all points in population
             for point in self.population.iter_mut() {
-                 *point += destination.clone();
+                *point += vector.clone();
             }
 
             // alter center value
-            self.center += destination.clone();
+            self.center += vector.clone();
 
             // wipe out previous evaluation results
             self.values = None;
