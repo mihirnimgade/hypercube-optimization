@@ -151,3 +151,48 @@ impl fmt::Display for Hypercube {
         )
     }
 }
+
+mod tests {
+    use super::*;
+    use crate::rastrigin;
+
+    #[test]
+    fn new_hypercube_1() {
+        let test_hypercube = Hypercube::new(3, 34.0, 120.0);
+
+        let expected_bounds = HypercubeBounds::new(3, 34.0, 120.0);
+
+        assert_eq!(test_hypercube.current_bounds, expected_bounds);
+        assert_eq!(test_hypercube.init_bounds, expected_bounds);
+        assert_eq!(test_hypercube.values, None);
+        assert_eq!(test_hypercube.diagonal, point![86.0; 3]);
+        assert!(test_hypercube.population_size > 0);
+        assert_eq!(test_hypercube.center, point![77.0; 3]);
+        assert_eq!(test_hypercube.dimension, 3);
+    }
+
+    #[test]
+    #[should_panic]
+    fn new_hypercube_2() {
+        let _test_hypercube = Hypercube::new(0, 34.0, 120.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn new_hypercube_3() {
+        let _test_hypercube = Hypercube::new(5, 120.0, 34.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn new_hypercube_4() {
+        let _test_hypercube = Hypercube::new(5, -3.0, -37.0);
+    }
+
+    #[test]
+    fn evaluate_hypercube_1() {
+        let mut test_hypercube = Hypercube::new(5, 30.4, 105.0);
+        test_hypercube.evaluate(rastrigin);
+        assert!(test_hypercube.values.is_some());
+    }
+}
