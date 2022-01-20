@@ -79,16 +79,23 @@ impl HypercubeBounds {
     pub fn shrink_towards_center(&self, center: &Point, scale_factor: f64) -> Self {
         assert!(scale_factor >= 0.0, "negative scale factor is invalid");
         assert!(scale_factor <= 1.0, "scale factor above 1 is invalid");
+        assert_eq!(
+            self.lower.dimension, center.dimension,
+            "center point dimension and bounds point dimension do not match. expected {}, got {}",
+            self.lower.dimension, center.dimension
+        );
 
-        let lower_to_center: Point = center - &self.lower;
-        let upper_to_center: Point = center - &self.upper;
+        // TODO: rewrite this to use shrink_towards_center() when it is implemented for Point
 
-        let scaled_lower_to_center = lower_to_center.scale(1.0 - scale_factor);
-        let scaled_upper_to_center = upper_to_center.scale(1.0 - scale_factor);
+        let mut new_lower = self.lower.clone();
+        let mut new_upper = self.upper.clone();
+
+        new_lower.shrink_towards_center_in_place(&center, scale_factor);
+        new_upper.shrink_towards_center_in_place(&center, scale_factor);
 
         Self {
-            lower: &self.lower + &scaled_lower_to_center,
-            upper: &self.upper + &scaled_upper_to_center,
+            lower: new_lower,
+            upper: new_upper,
         }
     }
 }
