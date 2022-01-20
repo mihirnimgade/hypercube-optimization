@@ -137,14 +137,9 @@ impl fmt::Display for Hypercube {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Dimension: {}\nLower bound: {:?}\nUpper bound: {:?}\
-            \nCenter: {:?}\nPopulation size: {}\nValues: {:#?}\n",
-            self.dimension,
-            self.init_bounds.lower,
-            self.init_bounds.upper,
-            self.center,
-            self.population_size,
-            self.values
+            "Dimension: {}\nBounds: {:#?}\
+            \nCenter: {:#?}\nPopulation size: {}\nValues: {:#?}\n",
+            self.dimension, self.init_bounds, self.center, self.population_size, self.values
         )
     }
 }
