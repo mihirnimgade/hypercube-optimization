@@ -130,6 +130,18 @@ impl Point {
         Self::from_vec(random_vec)
     }
 
+    /// Shrink point towards a specified center. The scale factor must be
+    /// such that 0.0 <= sf <= 1.0
+    pub fn shrink_towards_center_in_place(&mut self, center: &Point, scale_factor: f64) {
+        assert!(scale_factor >= 0.0, "scale factor cannot be negative");
+        assert!(scale_factor <= 1.0, "scale factor cannot be more than 1");
+
+        let point_to_center: Point = center - &self;
+        let scaled_point_to_center = point_to_center.scale(1.0 - scale_factor);
+
+        *self += scaled_point_to_center;
+    }
+
     pub fn get(&self, index: usize) -> Option<&f64> {
         self.coords.get(index)
     }
@@ -411,5 +423,60 @@ mod tests {
         let b = a.scale(2.0);
 
         assert_eq!(b, point![4.0, 8.0, 12.0, 16.0]);
+    }
+
+    #[test]
+    fn shrink_towards_center_in_place_1() {
+        let mut a = point![120.0; 3];
+        let center = point![60.0; 3];
+
+        a.shrink_towards_center_in_place(&center, 0.5);
+        let expected_result = point![90.0; 3];
+
+        assert_eq!(expected_result, a);
+    }
+
+    #[test]
+    fn shrink_towards_center_in_place_2() {
+        let mut a = point![120.0; 3];
+        let center = point![60.0; 3];
+
+        a.shrink_towards_center_in_place(&center, 0.0);
+
+        // point should move entirely onto the center
+        let expected_result = point![60.0; 3];
+
+        assert_eq!(expected_result, a);
+    }
+
+    #[test]
+    fn shrink_towards_center_in_place_3() {
+        let mut a = point![120.0; 3];
+        let center = point![60.0; 3];
+
+        a.shrink_towards_center_in_place(&center, 1.0);
+
+        // point should be unchanged
+        let expected_result = point![120.0; 3];
+
+        assert_eq!(expected_result, a);
+    }
+
+    #[test]
+    #[should_panic]
+    fn shrink_towards_center_in_place_4() {
+        let mut a = point![120.0; 3];
+        let center = point![60.0; 3];
+
+        a.shrink_towards_center_in_place(&center, 1.1);
+    }
+
+    #[test]
+    #[should_panic]
+    fn shrink_towards_center_in_place_5() {
+        let mut a = point![120.0; 3];
+        let center = point![60.0; 3];
+
+        a.shrink_towards_center_in_place(&center, -0.1);
     }
 }
