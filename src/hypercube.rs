@@ -95,8 +95,8 @@ impl Hypercube {
         // test adding destination vector to current bounds
         let new_bounds: HypercubeBounds = self.current_bounds.displace_by(vector);
 
-        // if within bounds
-        if self.current_bounds.within(&new_bounds) {
+        // if new bounds are within the bounds that the hypercube was initialized with
+        if new_bounds.within(&self.init_bounds) {
             // add vector to all points in population
             for point in self.population.iter_mut() {
                 *point += vector.clone();
