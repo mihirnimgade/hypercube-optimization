@@ -168,6 +168,7 @@ impl fmt::Display for Hypercube {
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::rastrigin;
@@ -210,5 +211,25 @@ mod tests {
         let mut test_hypercube = Hypercube::new(5, 30.4, 105.0);
         test_hypercube.evaluate(rastrigin);
         assert!(test_hypercube.values.is_some());
+    }
+
+    #[test]
+    fn displace_1() {
+        let mut test_hypercube = Hypercube::new(5, 30.4, 105.0);
+        let small_vector = point![0.1; 5];
+
+        assert!(test_hypercube.displace_by(&small_vector).is_err());
+    }
+
+    #[test]
+    fn shrink_and_displace_1() {
+        let mut test_hypercube = Hypercube::new(5, 0.0, 120.0);
+        let small_vector = point![1.0; 5];
+
+        test_hypercube.shrink((59.0 / 60.0) as f64);
+        assert!(test_hypercube.displace_by(&small_vector).is_ok());
+
+        // displacing again should fail
+        assert!(test_hypercube.displace_by(&small_vector).is_err());
     }
 }
