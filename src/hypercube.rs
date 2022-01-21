@@ -17,6 +17,7 @@ pub struct Hypercube {
 }
 
 impl Hypercube {
+    /// Creates a new hypercube with a given `dimension` and bounds.
     pub fn new(dimension: u32, lower_bound: f64, upper_bound: f64) -> Self {
         assert_ne!(dimension, 0, "dimension cannot be zero");
         assert!(
@@ -62,10 +63,8 @@ impl Hypercube {
         }
     }
 
-    /*
-    Applies the vector function to all points in the population and stores it in the hypercube
-    object
-    */
+    /// Applies the vector function to all points in the population and stores it in the hypercube
+    /// struct.
     pub fn evaluate(&mut self, point_function: fn(&Point) -> f64) {
         let mut values = Vec::with_capacity(self.population_size as usize);
 
@@ -77,13 +76,8 @@ impl Hypercube {
         self.values = Some(values);
     }
 
-    /*
-    Displaces the hypercube by moving the center to the destination argument. Returns a Result
-    object to indicate whether the displacement was successful or not.
-     */
+    /// Displaces the hypercube by adding the `vector` argument to the hypercube's center.
     pub fn displace_by(&mut self, vector: &Point) -> Result<(), &'static str> {
-        // TODO: write test functions for this
-
         // ensures the destination vector is the correct dimension
         assert_eq!(
             vector.dimension as u32, self.dimension,
