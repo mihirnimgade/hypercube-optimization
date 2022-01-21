@@ -111,9 +111,23 @@ impl Hypercube {
         }
     }
 
-    /*
-    Shrinks the radius of the hypercube by multiplying it with the factor argument.
-     */
+    /// Displaces the hypercube by moving the center to the `destination` argument.
+    pub fn displace_to(&mut self, destination: &Point) -> Result<(), &'static str> {
+        // ensures the destination vector is the correct dimension
+        assert_eq!(
+            destination.dimension as u32, self.dimension,
+            "destination is not the correct dimension. \
+            expected {}, got {}.",
+            self.dimension, destination.dimension
+        );
+
+        let center_to_destination = destination - &self.center;
+
+        self.displace_by(&center_to_destination)
+    }
+
+    /// Shrinks the hypercube by the given `factor`. This eliminates the previously computed
+    /// hypercube values.
     pub fn shrink(&mut self, factor: f64) {
         assert!(factor > 0.0, "factor cannot be less than zero");
         assert!(factor <= 1.0, "factor cannot be more than one");
