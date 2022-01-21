@@ -96,6 +96,9 @@ impl Hypercube {
                 *point += vector.clone();
             }
 
+            // current bounds should now be new_bounds
+            self.current_bounds = new_bounds;
+
             // alter center value
             self.center += vector.clone();
 
