@@ -142,8 +142,6 @@ impl Hypercube {
             point.shrink_towards_center_in_place(&self.center, factor);
         }
 
-        // could also iterate over population points and map closure onto them
-
         // recalculate diagonal
         self.diagonal = self.current_bounds.get_diagonal();
 
@@ -231,5 +229,39 @@ mod tests {
 
         // displacing again should fail
         assert!(test_hypercube.displace_by(&small_vector).is_err());
+    }
+
+    #[test]
+    fn shrink_1() {
+        let mut test_hypercube = Hypercube::new(5, 0.0, 120.0);
+        let original_hypercube = Hypercube::new(5, 0.0, 120.0);
+
+        test_hypercube.evaluate(rastrigin);
+
+        assert!(test_hypercube.values.is_some());
+
+        // shrink hypercube from center
+        test_hypercube.shrink(0.5);
+
+        // center should not change
+        assert_eq!(test_hypercube.center, original_hypercube.center);
+
+        // initial bounds should not change
+        assert_eq!(test_hypercube.init_bounds, original_hypercube.init_bounds);
+
+        // current bounds should change
+        assert_eq!(
+            test_hypercube.current_bounds,
+            HypercubeBounds::new(5, 30.0, 90.0)
+        );
+
+        // diagonal will change
+        assert_eq!(test_hypercube.diagonal, point![60.0; 5]);
+
+        // population points should be different
+        assert_ne!(test_hypercube.population, original_hypercube.population);
+
+        // old evaluation values should have been deleted
+        assert!(test_hypercube.values.is_none());
     }
 }
