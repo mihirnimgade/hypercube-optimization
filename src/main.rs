@@ -1,9 +1,9 @@
 use crate::objective_functions::objective_functions::rastrigin;
 use crate::point::Point;
 
+mod bounds;
 mod hypercube;
 mod objective_functions;
-mod bounds;
 mod point;
 
 fn main() {
@@ -12,18 +12,27 @@ fn main() {
     // HypercubeOptimizer.run() should take an objective function and bounds
 
     let dimension: u32 = 3;
-    let init_bounds = bounds::Bounds::new(0.0, 120.0);
 
-    let mut cube = hypercube::Hypercube::new(dimension, init_bounds);
+    let mut cube = hypercube::Hypercube::new(dimension, 0.0, 120.0);
+
+    let s = "-".repeat(20);
+
+    println!("{} pre-evaluation and pre-shrink {}\n", s, s);
+    println!("{}", cube);
 
     cube.evaluate(rastrigin);
 
-    let destination: Point = point![23.2, 12.2, 32.4];
+    // shrink and displace
+    cube.shrink(0.01);
+    let result = cube.displace_by(&point![1.0, 2.0, 4.0]);
 
-    let displacement_result = cube.displace(&destination);
-
-    match displacement_result {
-        Ok(()) => println!("displacement successful"),
-        Err(message) => println!("{}", message)
+    match result {
+        Ok(()) => println!("displacement successful!\n"),
+        Err(str) => println!("{}\n", str),
     }
+
+    cube.evaluate(rastrigin);
+
+    println!("{} post-evaluation and post-shrink {}\n", s, s);
+    println!("{}", cube);
 }
