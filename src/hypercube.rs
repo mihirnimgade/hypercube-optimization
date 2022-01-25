@@ -4,6 +4,7 @@ use std::fmt;
 use crate::bounds::HypercubeBounds;
 use crate::point;
 use crate::point::Point;
+use ordered_float::NotNan;
 
 pub struct Hypercube {
     dimension: u32,
@@ -14,6 +15,7 @@ pub struct Hypercube {
     population_size: u64,
     population: Vec<Point>,
     values: Option<Vec<f64>>,
+    ordered_values: BinaryHeap<NotNan<f64>>,
 }
 
 impl Hypercube {
@@ -60,6 +62,7 @@ impl Hypercube {
             population_size,
             population: random_points,
             values: None,
+            ordered_values: BinaryHeap::with_capacity(population_size as usize),
         }
     }
 
@@ -70,10 +73,30 @@ impl Hypercube {
 
         // iterate over population points and apply vector function
         for vec in &self.population {
-            values.push(point_function(vec));
+            let result = point_function(vec);
+            let nn_result = NotNan::new(result).unwrap();
+
+            self.ordered_values.push(nn_result);
+            values.push(result);
         }
 
         self.values = Some(values);
+    }
+
+    /// Peek at the maximum value evaluated by the hypercube
+    pub fn peek_best_value(&self) -> Option<f64> {
+        match self.ordered_values.peek() {
+            Some(&v) => Some(v.into_inner()),
+            None => None,
+        }
+    }
+
+    /// Pop the maximum value evaluated by the hypercube
+    pub fn pop_best_value(&mut self) -> Option<f64> {
+        match self.ordered_values.pop() {
+            Some(v) => Some(v.into_inner()),
+            None => None,
+        }
     }
 
     /// Displaces the hypercube by adding the `vector` argument to the hypercube's center.
@@ -104,6 +127,7 @@ impl Hypercube {
 
             // wipe out previous evaluation results
             self.values = None;
+            self.ordered_values.clear();
 
             Ok(())
         } else {
@@ -147,6 +171,7 @@ impl Hypercube {
 
         // clear previous evaluation values
         self.values = None;
+        self.ordered_values.clear();
     }
 }
 
@@ -154,8 +179,8 @@ impl fmt::Display for Hypercube {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Dimension: {}\nCurrent bounds: {:#?}\
-            \nCenter: {:#?}\nDiagonal length: {:.2}\nPopulation size: {}\nValues: {:#?}\n",
+            "Dimension: {}\nCurrent bounds: {:?}\
+            \nCenter: {:?}\nDiagonal length: {:.2}\nPopulation size: {}\nValues: {:?}\n",
             self.dimension,
             self.current_bounds,
             self.center,
@@ -214,7 +239,7 @@ mod tests {
     #[test]
     fn displace_1() {
         let mut test_hypercube = Hypercube::new(5, 30.4, 105.0);
-        let small_vector = point![0.1; 5];
+        let small_vector = point![0.01; 5];
 
         assert!(test_hypercube.displace_by(&small_vector).is_err());
     }
