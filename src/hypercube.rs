@@ -264,4 +264,83 @@ mod tests {
         // old evaluation values should have been deleted
         assert!(test_hypercube.values.is_none());
     }
+
+    #[test]
+    fn displace_to_1() {
+        // TODO: finish test
+        let _test_hypercube = Hypercube::new(5, 0.0, 120.0);
+    }
+
+    #[test]
+    fn eight_corners() {
+        let mut test_hypercube = Hypercube::new(3, 0.0, 120.0);
+
+        // shrink HC to half its size
+        test_hypercube.shrink(0.50);
+
+        test_hypercube
+            .displace_to(&point![30.0, 30.0, 30.0])
+            .unwrap();
+        test_hypercube
+            .displace_to(&point![30.0, 30.0, 90.0])
+            .unwrap();
+
+        test_hypercube
+            .displace_to(&point![30.0, 90.0, 30.0])
+            .unwrap();
+        test_hypercube
+            .displace_to(&point![30.0, 90.0, 90.0])
+            .unwrap();
+
+        test_hypercube
+            .displace_to(&point![90.0, 30.0, 30.0])
+            .unwrap();
+        test_hypercube
+            .displace_to(&point![90.0, 30.0, 90.0])
+            .unwrap();
+
+        test_hypercube
+            .displace_to(&point![90.0, 90.0, 30.0])
+            .unwrap();
+        test_hypercube
+            .displace_to(&point![90.0, 90.0, 90.0])
+            .unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn eight_corners_panic() {
+        let mut test_hypercube = Hypercube::new(3, 0.0, 120.0);
+
+        // shrink HC to slightly more than half its size
+        test_hypercube.shrink(0.51);
+
+        test_hypercube
+            .displace_to(&point![30.0, 30.0, 30.0])
+            .unwrap();
+        test_hypercube
+            .displace_to(&point![30.0, 30.0, 90.0])
+            .unwrap();
+
+        test_hypercube
+            .displace_to(&point![30.0, 90.0, 30.0])
+            .unwrap();
+        test_hypercube
+            .displace_to(&point![30.0, 90.0, 90.0])
+            .unwrap();
+
+        test_hypercube
+            .displace_to(&point![90.0, 30.0, 30.0])
+            .unwrap();
+        test_hypercube
+            .displace_to(&point![90.0, 30.0, 90.0])
+            .unwrap();
+
+        test_hypercube
+            .displace_to(&point![90.0, 90.0, 30.0])
+            .unwrap();
+        test_hypercube
+            .displace_to(&point![90.0, 90.0, 90.0])
+            .unwrap();
+    }
 }
