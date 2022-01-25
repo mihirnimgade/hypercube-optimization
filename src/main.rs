@@ -11,7 +11,7 @@ fn main() {
     // HypercubeOptimizer will create mutable Hypercube object and manipulate it within a loop
     // HypercubeOptimizer.run() should take an objective function and bounds
 
-    let dimension: u32 = 3;
+    let dimension: u32 = 8;
 
     let mut cube = hypercube::Hypercube::new(dimension, 0.0, 120.0);
 
@@ -22,9 +22,11 @@ fn main() {
 
     cube.evaluate(rastrigin);
 
+    println!("Best value: {}", cube.peek_best_value().unwrap());
+
     // shrink and displace
     cube.shrink(0.01);
-    let result = cube.displace_by(&point![1.0, 2.0, 4.0]);
+    let result = cube.displace_by(&point![1.0; dimension]);
 
     match result {
         Ok(()) => println!("displacement successful!\n"),
@@ -35,4 +37,5 @@ fn main() {
 
     println!("{} post-evaluation and post-shrink {}\n", s, s);
     println!("{}", cube);
+    println!("Best value: {}", cube.peek_best_value().unwrap());
 }
