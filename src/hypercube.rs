@@ -379,29 +379,5 @@ mod tests {
         test_hypercube
             .displace_to(&point![30.0, 30.0, 30.0])
             .unwrap();
-        test_hypercube
-            .displace_to(&point![30.0, 30.0, 90.0])
-            .unwrap();
-
-        test_hypercube
-            .displace_to(&point![30.0, 90.0, 30.0])
-            .unwrap();
-        test_hypercube
-            .displace_to(&point![30.0, 90.0, 90.0])
-            .unwrap();
-
-        test_hypercube
-            .displace_to(&point![90.0, 30.0, 30.0])
-            .unwrap();
-        test_hypercube
-            .displace_to(&point![90.0, 30.0, 90.0])
-            .unwrap();
-
-        test_hypercube
-            .displace_to(&point![90.0, 90.0, 30.0])
-            .unwrap();
-        test_hypercube
-            .displace_to(&point![90.0, 90.0, 90.0])
-            .unwrap();
     }
 }
