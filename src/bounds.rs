@@ -30,7 +30,7 @@ impl HypercubeBounds {
     /// Creates a new HypercubeBounds struct from points; intended for internal testing
     fn from_points(lower: Point, upper: Point) -> Self {
         // ensure lower and upper Point dimensions are equivalent
-        assert_eq!(lower.dimension, lower.dimension);
+        assert_eq!(lower.dim(), lower.dim());
         Self { lower, upper }
     }
 
@@ -80,9 +80,11 @@ impl HypercubeBounds {
         assert!(scale_factor >= 0.0, "negative scale factor is invalid");
         assert!(scale_factor <= 1.0, "scale factor above 1 is invalid");
         assert_eq!(
-            self.lower.dimension, center.dimension,
+            self.lower.dim(),
+            center.dim(),
             "center point dimension and bounds point dimension do not match. expected {}, got {}",
-            self.lower.dimension, center.dimension
+            self.lower.dim(),
+            center.dim()
         );
 
         // TODO: rewrite this to use shrink_towards_center() when it is implemented for Point
@@ -149,7 +151,7 @@ mod tests {
     #[test]
     fn check_upper_lower_dim() {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
-        assert_eq!(a.lower.dimension, a.upper.dimension);
+        assert_eq!(a.lower.dim(), a.upper.dim());
     }
 
     #[test]
