@@ -14,7 +14,7 @@ pub struct Hypercube {
     center: Point,
     population_size: u64,
     population: Vec<Point>,
-    values: Option<Vec<f64>>,
+    values: Vec<f64>,
     ordered_values: BinaryHeap<NotNan<f64>>,
 }
 
@@ -61,7 +61,7 @@ impl Hypercube {
             center,
             population_size,
             population: random_points,
-            values: None,
+            values: Vec::with_capacity(population_size as usize),
             ordered_values: BinaryHeap::with_capacity(population_size as usize),
         }
     }
@@ -80,7 +80,7 @@ impl Hypercube {
             values.push(result);
         }
 
-        self.values = Some(values);
+        self.values = values;
     }
 
     /// Peek at the maximum value evaluated by the hypercube
@@ -126,7 +126,7 @@ impl Hypercube {
             self.center += vector.clone();
 
             // wipe out previous evaluation results
-            self.values = None;
+            self.values.clear();
             self.ordered_values.clear();
 
             Ok(())
@@ -170,7 +170,7 @@ impl Hypercube {
         self.diagonal = self.current_bounds.get_diagonal();
 
         // clear previous evaluation values
-        self.values = None;
+        self.values.clear();
         self.ordered_values.clear();
     }
 }
@@ -204,7 +204,10 @@ mod tests {
 
         assert_eq!(test_hypercube.current_bounds, expected_bounds);
         assert_eq!(test_hypercube.init_bounds, expected_bounds);
-        assert_eq!(test_hypercube.values, None);
+        assert_eq!(
+            test_hypercube.values,
+            Vec::with_capacity(test_hypercube.dimension as usize)
+        );
         assert_eq!(test_hypercube.diagonal, point![86.0; 3]);
         assert!(test_hypercube.population_size > 0);
         assert_eq!(test_hypercube.center, point![77.0; 3]);
@@ -233,11 +236,11 @@ mod tests {
     fn evaluate_hypercube_1() {
         let mut test_hypercube = Hypercube::new(5, 30.4, 105.0);
         test_hypercube.evaluate(rastrigin);
-        assert!(test_hypercube.values.is_some());
+        assert!(!test_hypercube.values.is_empty());
     }
 
     #[test]
-    fn displace_1() {
+    fn displace_by_1() {
         let mut test_hypercube = Hypercube::new(5, 30.4, 105.0);
         let small_vector = point![0.01; 5];
 
@@ -299,7 +302,8 @@ mod tests {
 
         test_hypercube.evaluate(rastrigin);
 
-        assert!(test_hypercube.values.is_some());
+        // values should not be empty
+        assert!(!test_hypercube.values.is_empty());
 
         // shrink hypercube from center
         test_hypercube.shrink(0.5);
@@ -323,13 +327,7 @@ mod tests {
         assert_ne!(test_hypercube.population, original_hypercube.population);
 
         // old evaluation values should have been deleted
-        assert!(test_hypercube.values.is_none());
-    }
-
-    #[test]
-    fn displace_to_1() {
-        // TODO: finish test
-        let _test_hypercube = Hypercube::new(5, 0.0, 120.0);
+        assert!(test_hypercube.values.is_empty());
     }
 
     #[test]
