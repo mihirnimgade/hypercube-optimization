@@ -6,7 +6,7 @@ pub mod objective_functions {
     use std::f64::consts::PI;
 
     pub fn rastrigin(input_point: &Point) -> f64 {
-        let dimension = input_point.dimension;
+        let dimension = input_point.dim();
         let mut sum: f64 = 0.0;
 
         for val in input_point.iter() {
