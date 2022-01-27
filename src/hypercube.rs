@@ -103,10 +103,12 @@ impl Hypercube {
     pub fn displace_by(&mut self, vector: &Point) -> Result<(), &'static str> {
         // ensures the destination vector is the correct dimension
         assert_eq!(
-            vector.dimension as u32, self.dimension,
-            "destination is not the correct dimension. \
+            vector.dim() as u32,
+            self.dimension,
+            "vector is not the correct size. \
             expected {}, got {}.",
-            self.dimension, vector.dimension
+            self.dimension,
+            vector.dim()
         );
 
         // test adding destination vector to current bounds
@@ -139,10 +141,12 @@ impl Hypercube {
     pub fn displace_to(&mut self, destination: &Point) -> Result<(), &'static str> {
         // ensures the destination vector is the correct dimension
         assert_eq!(
-            destination.dimension as u32, self.dimension,
+            destination.dim() as u32,
+            self.dimension,
             "destination is not the correct dimension. \
             expected {}, got {}.",
-            self.dimension, destination.dimension
+            self.dimension,
+            destination.dim()
         );
 
         let center_to_destination = destination - &self.center;
