@@ -14,11 +14,11 @@ use std::slice::Iter;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Point {
-    pub dimension: u32,
+    dimension: u32,
     coords: Vec<f64>,
 }
 
-/// Trait implementations for mathematical operations
+/* Trait implementation for mathematical operations */
 
 impl<'a, 'b> Add<&'b Point> for &'a Point {
     type Output = Point;
@@ -76,7 +76,7 @@ impl AddAssign for Point {
     }
 }
 
-/// Struct method implementations
+/* Struct method implementations */
 
 impl Point {
     /// Creates a Point struct from a vector. Consumes vector in the process.
@@ -158,6 +158,10 @@ impl Point {
         self.coords.iter()
     }
 
+    pub fn dim(&self) -> u32 {
+        self.dimension
+    }
+
     /// Scales the point by scale factor in-place
     pub fn scale_in_place(&mut self, scale_factor: f64) {
         // scale elements
@@ -175,9 +179,9 @@ impl Point {
     }
 }
 
-/// Comparison function
+/* Comparison function */
 
-// comparision function to find max and min of Vec<f64>
+/// comparision function to find max and min of Vec<f64>
 pub fn cmp(lhs: &f64, rhs: &f64) -> Ordering {
     lhs.partial_cmp(rhs).unwrap()
 }
