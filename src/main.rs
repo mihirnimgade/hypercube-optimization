@@ -4,7 +4,9 @@ use crate::point::Point;
 mod bounds;
 mod hypercube;
 mod objective_functions;
+mod optimizer;
 mod point;
+mod result;
 
 fn main() {
     // create HypercubeOptimizer object here with certain parameters
