@@ -15,4 +15,12 @@ pub mod objective_functions {
 
         10.0 * dimension as f64 + sum
     }
+
+    pub fn nan_function(input_point: &Point) -> f64 {
+        f64::NAN
+    }
+
+    pub fn summation(input_point: &Point) -> f64 {
+        input_point.iter().fold(0.0, |acc, x| acc + x)
+    }
 }
