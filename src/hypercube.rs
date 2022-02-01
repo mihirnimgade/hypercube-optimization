@@ -2,6 +2,7 @@ use std::collections::BinaryHeap;
 use std::fmt;
 
 use crate::bounds::HypercubeBounds;
+use crate::evaluation::PointEval;
 use crate::point;
 use crate::point::Point;
 use ordered_float::NotNan;
@@ -14,8 +15,8 @@ pub struct Hypercube {
     center: Point,
     population_size: u64,
     population: Vec<Point>,
-    values: Vec<f64>,
-    ordered_values: BinaryHeap<NotNan<f64>>,
+    values: Vec<PointEval>,
+    ordered_values: BinaryHeap<PointEval>,
 }
 
 impl Hypercube {
@@ -43,7 +44,8 @@ impl Hypercube {
 
         for _ in 0..num_points {
             // insert point into random_points vector
-            random_points.push(Point::random(dimension, lower_bound, upper_bound));
+            let point = Point::random(dimension, lower_bound, upper_bound);
+            random_points.push(point);
         }
 
         let population_size = random_points.len() as u64;
@@ -69,24 +71,20 @@ impl Hypercube {
     /// Applies the vector function to all points in the population and stores it in the hypercube
     /// struct.
     pub fn evaluate(&mut self, point_function: fn(&Point) -> f64) {
-        let mut values = Vec::with_capacity(self.population_size as usize);
-
-        // iterate over population points and apply vector function
-        for vec in &self.population {
-            let result = point_function(vec);
-            let nn_result = NotNan::new(result).unwrap();
-
-            self.ordered_values.push(nn_result);
-            values.push(result);
+        // iterate over population points, apply vector function, and store result in values and
+        // ordered_values
+        for point in &self.population {
+            // TODO: improve this so unnecessary cloning is removed
+            let new_eval = PointEval::new_with_eval(point.clone(), point_function);
+            self.values.push(new_eval.clone());
+            self.ordered_values.push(new_eval);
         }
-
-        self.values = values;
     }
 
     /// Peek at the maximum value evaluated by the hypercube
     pub fn peek_best_value(&self) -> Option<f64> {
         match self.ordered_values.peek() {
-            Some(&v) => Some(v.into_inner()),
+            Some(v) => Some(v.get_eval()),
             None => None,
         }
     }
@@ -94,7 +92,7 @@ impl Hypercube {
     /// Pop the maximum value evaluated by the hypercube
     pub fn pop_best_value(&mut self) -> Option<f64> {
         match self.ordered_values.pop() {
-            Some(v) => Some(v.into_inner()),
+            Some(v) => Some(v.get_eval()),
             None => None,
         }
     }
