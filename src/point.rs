@@ -15,7 +15,7 @@ use std::slice::Iter;
 #[derive(Debug, PartialEq, Clone)]
 pub struct Point {
     dimension: u32,
-    coords: Vec<f64>,
+    coords: Box<[f64]>,
 }
 
 /* Trait implementation for mathematical operations */
@@ -84,10 +84,11 @@ impl Point {
         assert_ne!(vector.len(), 0, "vector dimension cannot be zero");
 
         let coords: Vec<f64> = vector;
+        let box_coords = coords.into_boxed_slice();
 
         Self {
-            dimension: coords.len() as u32,
-            coords,
+            dimension: box_coords.len() as u32,
+            coords: box_coords,
         }
     }
 
@@ -96,10 +97,11 @@ impl Point {
         assert_ne!(n, 0, "vector dimension cannot be zero");
 
         let coords = vec![element; n as usize];
+        let box_coords = coords.into_boxed_slice();
 
         Self {
             dimension: n,
-            coords,
+            coords: box_coords,
         }
     }
 
@@ -181,7 +183,7 @@ impl Point {
 
 /* Comparison function */
 
-/// comparision function to find max and min of Vec<f64>
+/// comparison function to find max and min of Vec<f64>
 pub fn cmp(lhs: &f64, rhs: &f64) -> Ordering {
     lhs.partial_cmp(rhs).unwrap()
 }
@@ -211,7 +213,7 @@ mod tests {
         let a = Point::fill(4.3, 10);
         let b = Point {
             dimension: 10,
-            coords: vec![4.3; 10],
+            coords: vec![4.3; 10].into_boxed_slice(),
         };
 
         assert_eq!(a, b);
@@ -228,7 +230,7 @@ mod tests {
         let a = Point::from_vec(vec![5.2, 4.5, 3.2]);
         let b = Point {
             dimension: 3,
-            coords: vec![5.2, 4.5, 3.2],
+            coords: vec![5.2, 4.5, 3.2].into_boxed_slice(),
         };
 
         assert_eq!(a, b);
