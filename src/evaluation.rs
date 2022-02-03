@@ -2,6 +2,9 @@ use crate::Point;
 use ordered_float::NotNan;
 use std::cmp::Ordering;
 
+/// Used to store the input and output to a specific vector function. Can be placed inside a binary
+/// heap and will be ordered by the image. This means PointEval instances with higher image values
+/// are considered "bigger" than instances with smaller image values.
 #[derive(Debug, Clone)]
 pub struct PointEval {
     argument: Point,
@@ -42,6 +45,10 @@ impl PointEval {
 
     pub fn get_eval(&self) -> f64 {
         self.image.into_inner()
+    }
+
+    pub fn get_point(&self) -> Point {
+        self.argument.clone()
     }
 }
 
