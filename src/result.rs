@@ -1,7 +1,11 @@
+use crate::Point;
+
 pub struct HypercubeOptimizerResult {
-    message: String,
+    result: String,
     loops: u32,
     function_evals: u32,
+    best_x: Point,
+    best_f: f64,
 }
 
 impl HypercubeOptimizerResult {
