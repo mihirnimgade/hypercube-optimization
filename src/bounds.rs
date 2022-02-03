@@ -104,6 +104,14 @@ impl HypercubeBounds {
     pub fn get_diagonal(&self) -> Point {
         &self.upper - &self.lower
     }
+
+    pub fn get_lower(&self) -> &Point {
+        &self.lower
+    }
+
+    pub fn get_upper(&self) -> &Point {
+        &self.upper
+    }
 }
 
 #[cfg(test)]
