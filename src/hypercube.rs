@@ -35,18 +35,16 @@ impl Hypercube {
         // TODO: replace with function that takes dimension and bounds and returns number of hypercube points
         let num_points = dimension;
 
-        // random point Vector to store random generated points
-        let mut random_points: Vec<Point> = Vec::with_capacity(num_points as usize);
-
         // calculate the hypercube's diagonal
         let hypercube_diagonal: Point =
             &point![upper_bound; dimension] - &point![lower_bound; dimension];
 
-        for _ in 0..num_points {
-            // insert point into random_points vector
-            let point = Point::random(dimension, lower_bound, upper_bound);
-            random_points.push(point);
-        }
+        let random_points = Hypercube::generate_random_points(
+            dimension,
+            num_points as u64,
+            lower_bound,
+            upper_bound,
+        );
 
         let population_size = random_points.len() as u64;
 
@@ -82,17 +80,17 @@ impl Hypercube {
     }
 
     /// Peek at the maximum value evaluated by the hypercube
-    pub fn peek_best_value(&self) -> Option<f64> {
+    pub fn peek_best_value(&self) -> Option<PointEval> {
         match self.ordered_values.peek() {
-            Some(v) => Some(v.get_eval()),
+            Some(v) => Some(v.clone()),
             None => None,
         }
     }
 
     /// Pop the maximum value evaluated by the hypercube
-    pub fn pop_best_value(&mut self) -> Option<f64> {
+    pub fn pop_best_value(&mut self) -> Option<PointEval> {
         match self.ordered_values.pop() {
-            Some(v) => Some(v.get_eval()),
+            Some(v) => Some(v.clone()),
             None => None,
         }
     }
@@ -174,6 +172,47 @@ impl Hypercube {
         // clear previous evaluation values
         self.values.clear();
         self.ordered_values.clear();
+    }
+
+    /// Re-generate points inside hypercube and erase previous evaluations
+    pub fn randomize_pop(&mut self) {
+        // randomize the hypercube's population
+        let new_random_points = Hypercube::generate_random_points(
+            self.dimension,
+            self.population_size,
+            self.current_bounds.get_lower().min_val().unwrap(),
+            self.current_bounds.get_upper().max_val().unwrap(),
+        );
+
+        self.population = new_random_points;
+
+        // clear previous evaluations
+        self.values.clear();
+        self.ordered_values.clear();
+    }
+
+    /// Generate a vector of random points with a given dimension and within given bounds
+    fn generate_random_points(
+        dimension: u32,
+        num_points: u64,
+        lower_bound: f64,
+        upper_bound: f64,
+    ) -> Vec<Point> {
+        assert!(
+            upper_bound > lower_bound,
+            "upper bound not strictly larger than lower bound"
+        );
+
+        // random point Vector to store random generated points
+        let mut random_points: Vec<Point> = Vec::with_capacity(num_points as usize);
+
+        for _ in 0..num_points {
+            // insert point into random_points vector
+            let point = Point::random(dimension, lower_bound, upper_bound);
+            random_points.push(point);
+        }
+
+        random_points
     }
 }
 
@@ -379,5 +418,12 @@ mod tests {
         test_hypercube
             .displace_to(&point![30.0, 30.0, 30.0])
             .unwrap();
+    }
+
+    #[test]
+    #[ignore]
+    fn leakage_1() {
+        // check whether the hypercube points stay within the hypercube bounds at all times
+        todo!()
     }
 }
