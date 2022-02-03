@@ -1,8 +1,10 @@
+use crate::evaluation::PointEval;
 use crate::hypercube::Hypercube;
 use crate::result::HypercubeOptimizerResult;
 use crate::Point;
 
 pub struct HypercubeOptimizer {
+    /// dimension of the optimization problem
     dimension: u32,
     init_point: Point,
     /// list of hypercubes created by the optimizer
@@ -65,18 +67,103 @@ impl HypercubeOptimizer {
         }
     }
 
-    pub fn optimize() -> HypercubeOptimizerResult {
-        // evaluate initial point and store initial value
+    pub fn maximize(&mut self) -> PointEval {
+        // evaluate initial point and store value inside special struct
+        let init_eval = PointEval::new_with_eval(self.init_point.clone(), self.objective_function);
+        let mut previous_best_eval = init_eval;
 
-        // should take max_eval into consideration and not evaluate the function beyond that
+        // should take max_eval into consideration and not evaluate the function more times than that
 
-        // compute hypercube evaluations from max_eval and number of points in hypercube
+        // TODO: compute no. of allowed hypercube evaluations from (max_eval and number of points in hypercube)
+        let max_eval = 1000;
+        let max_hypercube_eval = 40;
+
+        // keep running score of average image
+        let mut average_f = 0.0;
+
+        // records absolute change in F to compare with tolF
+        let mut abs_delta_f_vec = Vec::with_capacity(30);
 
         // start optimization loop and measure time
 
-        //
+        // retrieve first hypercube
+        let first_hypercube = self.hypercubes.first_mut().unwrap();
 
-        todo!()
+        // start loop:
+        for i in 0..max_hypercube_eval {
+            println!("Loop {} of {}", i, max_hypercube_eval);
+
+            // <----- hypercube evaluation ----->
+
+            first_hypercube.evaluate(self.objective_function);
+
+            // get best eval
+            let current_best_eval = first_hypercube.peek_best_value().unwrap();
+
+            // compare to previous image and argument (will be PointEval struct)
+            if current_best_eval.get_eval() <= average_f || current_best_eval <= previous_best_eval
+            {
+                // if current best is worse than average best value skip iteration
+                // would want to reinitialize hypercube from here
+                // do not displace hypercube
+                continue;
+            }
+
+            // calculate difference between previous best and current best
+            let abs_delta_f = (current_best_eval.get_eval() - previous_best_eval.get_eval()).abs();
+
+            println!("Current best eval {:?}", current_best_eval);
+            println!("Previous best eval {:?}", previous_best_eval);
+
+            // TODO: can definitely write this better
+            if abs_delta_f <= self.tol_f {
+                abs_delta_f_vec.push(abs_delta_f);
+
+                // if the delta_f is within the tolerance consecutively more than 30 times, break
+                // optimization loop
+                if abs_delta_f_vec.len() >= 30 {
+                    break;
+                } else {
+                    abs_delta_f_vec.clear();
+                }
+            }
+
+            // calculate new average
+            average_f = average_f + (current_best_eval.get_eval() - average_f) / ((i + 1) as f64);
+
+            // compute new hypercube center (will be the average of old and new best value)
+            let temp = &current_best_eval.get_point() + &previous_best_eval.get_point();
+            let new_hypercube_center = temp.scale(0.5);
+
+            // <----- hypercube displacement ----->
+
+            let displacement_result = first_hypercube.displace_to(&new_hypercube_center);
+
+            match displacement_result {
+                Ok(_) => (),
+                Err(s) => panic!("{}", s),
+            }
+
+            // <----- hypercube shrink ----->
+
+            // compute renormalised distance
+
+            // compute convergence factor
+
+            // shrink hypercube
+
+            // TODO: fix constant shrinking
+            first_hypercube.shrink(0.80);
+
+            // reset current best, set previous best equal to current best
+            previous_best_eval = current_best_eval;
+
+            // end loop:
+        }
+
+        // return result struct
+
+        first_hypercube.peek_best_value().unwrap()
     }
 
     fn calculate_convergence(&self) -> f64 {
