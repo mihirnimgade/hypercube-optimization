@@ -1,4 +1,4 @@
-use crate::Point;
+use crate::point::Point;
 
 pub struct HypercubeOptimizerResult {
     result: String,

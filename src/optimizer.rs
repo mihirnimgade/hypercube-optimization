@@ -1,7 +1,7 @@
 use crate::evaluation::PointEval;
 use crate::hypercube::Hypercube;
+use crate::point::Point;
 use crate::result::HypercubeOptimizerResult;
-use crate::Point;
 
 pub struct HypercubeOptimizer {
     /// dimension of the optimization problem

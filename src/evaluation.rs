@@ -1,4 +1,4 @@
-use crate::Point;
+use crate::point::Point;
 use ordered_float::NotNan;
 use std::cmp::Ordering;
 
@@ -76,8 +76,9 @@ impl Ord for PointEval {
 #[cfg(test)]
 mod tests {
     use crate::evaluation::PointEval;
-    use crate::objective_functions::objective_functions::{nan_function, summation};
-    use crate::{point, rastrigin, Point};
+    use crate::objective_functions::{nan_function, rastrigin, summation};
+    use crate::point;
+    use crate::point::Point;
     use ordered_float::NotNan;
 
     #[test]

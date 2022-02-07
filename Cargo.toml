@@ -8,3 +8,7 @@ edition = "2021"
 [dependencies]
 rand = "0.8.4"
 ordered-float = "2.10.0"
+
+[lib]
+name = "hypercube_optimizer"
+path = "src/lib.rs"
