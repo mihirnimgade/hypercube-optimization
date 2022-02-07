@@ -214,6 +214,10 @@ impl Hypercube {
 
         random_points
     }
+
+    pub fn has_shrunk(&self) -> bool {
+        self.current_bounds != self.init_bounds
+    }
 }
 
 impl fmt::Display for Hypercube {
