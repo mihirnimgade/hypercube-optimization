@@ -96,7 +96,7 @@ impl Hypercube {
     }
 
     /// Displaces the hypercube by adding the `vector` argument to the hypercube's center.
-    pub fn displace_by(&mut self, vector: &Point) -> Result<(), &'static str> {
+    fn displace_by(&mut self, vector: &Point) -> Result<(), &'static str> {
         // ensures the destination vector is the correct dimension
         assert_eq!(
             vector.dim() as u32,
