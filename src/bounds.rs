@@ -172,87 +172,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
-    fn new_bounds_2() {
-        let _a = HypercubeBounds::new(5, 10.0, 0.0);
-    }
-
-    #[test]
-    #[should_panic]
-    fn new_bounds_3() {
-        let _a = HypercubeBounds::new(5, 10.0, 10.0);
-    }
-
-    #[test]
-    #[should_panic]
-    fn new_bounds_4() {
-        let _a = HypercubeBounds::new(0, 0.0, 10.0);
-    }
-
-    #[test]
-    fn within_subset() {
-        let a = HypercubeBounds::new(3, 0.0, 120.0);
-        let b = HypercubeBounds::new(3, -10.0, 200.0);
-
-        assert_eq!(a.within(&b), true);
-    }
-
-    #[test]
     fn check_upper_lower_dim() {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
         assert_eq!(a.lower.dim(), a.upper.dim());
-    }
-
-    #[test]
-    fn within_equal() {
-        let a = HypercubeBounds::new(3, 0.0, 120.0);
-
-        assert_eq!(a.within(&a), true);
-    }
-
-    #[test]
-    fn not_within_right_overlap() {
-        let a = HypercubeBounds::new(3, 0.0, 120.0);
-        let b = HypercubeBounds::new(3, 100.0, 200.0);
-
-        assert_eq!(a.within(&b), false);
-    }
-
-    #[test]
-    fn not_within_left_overlap() {
-        let a = HypercubeBounds::new(3, 0.0, 120.0);
-        let b = HypercubeBounds::new(3, -10.0, 90.0);
-
-        assert_eq!(a.within(&b), false);
-    }
-
-    #[test]
-    fn not_within_superset() {
-        let a = HypercubeBounds::new(3, 0.0, 120.0);
-        let b = HypercubeBounds::new(3, 30.0, 90.0);
-
-        assert_eq!(a.within(&b), false);
-    }
-
-    #[test]
-    fn not_within() {
-        let a = HypercubeBounds::new(3, 0.0, 120.0);
-        let b = HypercubeBounds::new(3, -10.0, -5.0);
-
-        assert_eq!(a.within(&b), false);
-    }
-
-    #[test]
-    fn displace_by_1() {
-        let a = HypercubeBounds::new(3, 0.0, 120.0);
-        let displacement_vec = point![1.0, 22.3, 11.7];
-
-        let calc_result = a.displace_by(&displacement_vec);
-
-        let expected_result =
-            HypercubeBounds::from_points(point![1.0, 22.3, 11.7], point![121.0, 142.3, 131.7]);
-
-        assert_eq!(expected_result, calc_result);
     }
 
     #[test]
@@ -304,14 +226,16 @@ mod tests {
     }
 
     #[test]
-    fn shrink_towards_center_1() {
+    fn displace_by_1() {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
-        let center = point![60.0; 3];
+        let displacement_vec = point![1.0, 22.3, 11.7];
 
-        let b = a.shrink_towards_center(&center, 0.5);
-        let expected_result = HypercubeBounds::new(3, 30.0, 90.0);
+        let calc_result = a.displace_by(&displacement_vec);
 
-        assert_eq!(expected_result, b);
+        let expected_result =
+            HypercubeBounds::from_points(point![1.0, 22.3, 11.7], point![121.0, 142.3, 131.7]);
+
+        assert_eq!(expected_result, calc_result);
     }
 
     #[test]
@@ -325,40 +249,54 @@ mod tests {
         assert_eq!(expected_result, b);
     }
 
+    // <----- .within() tests ----->
+
     #[test]
-    fn shrink_towards_center_3() {
+    fn within_subset() {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
-        let center = point![60.0; 3];
+        let b = HypercubeBounds::new(3, -10.0, 200.0);
 
-        let b = a.shrink_towards_center(&center, 1.0);
+        assert_eq!(a.within(&b), Result::Ok(true));
+    }
 
-        assert_eq!(a, b);
+    #[test]
+    fn within_equal() {
+        let a = HypercubeBounds::new(3, 0.0, 120.0);
+
+        assert_eq!(a.within(&a), Result::Ok(true));
+    }
+
+    #[test]
+    fn not_within_right_overlap() {
+        let a = HypercubeBounds::new(3, 0.0, 120.0);
+        let b = HypercubeBounds::new(3, 100.0, 200.0);
+
+        assert_eq!(a.within(&b), Result::Err(a.lower));
+    }
+
+    #[test]
+    fn not_within_left_overlap() {
+        let a = HypercubeBounds::new(3, 0.0, 120.0);
+        let b = HypercubeBounds::new(3, -10.0, 90.0);
+
+        assert_eq!(a.within(&b), Result::Err(a.upper));
     }
 
     #[test]
     #[should_panic]
-    fn shrink_towards_center_4() {
+    fn not_within_superset() {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
-        let center = point![60.0; 3];
+        let b = HypercubeBounds::new(3, 30.0, 90.0);
 
-        let _b = a.shrink_towards_center(&center, 1.1);
+        let result = a.within(&b);
     }
 
     #[test]
     #[should_panic]
-    fn shrink_towards_center_5() {
+    fn not_within_no_overlap() {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
-        let center = point![60.0; 3];
+        let b = HypercubeBounds::new(3, -10.0, -5.0);
 
-        let _b = a.shrink_towards_center(&center, -0.1);
-    }
-
-    #[test]
-    #[should_panic]
-    fn shrink_towards_center_6() {
-        let a = HypercubeBounds::new(3, 0.0, 120.0);
-        let center = point![60.0; 4];
-
-        let _b = a.shrink_towards_center(&center, 0.7);
+        let result = a.within(&b);
     }
 }
