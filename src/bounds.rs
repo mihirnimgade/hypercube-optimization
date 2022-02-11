@@ -36,23 +36,64 @@ impl HypercubeBounds {
 
     /// Checks if lhs bound is completely inside rhs bound. This means that the lhs bound is a
     /// subset of the rhs bound. This implies the bounds can also be equal.
-    pub fn within(&self, rhs: &Self) -> bool {
-        // check upper bound
+    ///
+    /// Returns a Result that is `true` if the `self` bound is completely geometrically contained
+    /// within the `rhs` bound. If the `self` bound isn't completely within the `rhs` bound, it
+    /// returns which bound (can only be one of the lower or upper bound point) is out of the
+    /// `rhs` bound.
+    ///
+    /// Panics if the `self` bound is a superset of the `rhs` bound or if there is no overlap
+    /// between the two bounds.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - the bound that will be compared to `rhs`
+    /// * `rhs` - second comparison bound
+    ///
+    pub fn within(&self, rhs: &Self) -> Result<bool, Point> {
+        let mut return_bound: Point;
+
+        let mut lower_outside_range = false;
+        let mut upper_outside_range = false;
+
+        // check self upper bound against rhs upper bound
         for (index, element) in self.upper.iter().enumerate() {
-            // if self.upper element is bigger than rhs.upper element...
+            // if self upper bound is bigger than rhs.upper element...
             if element > rhs.upper.get(index).unwrap() {
-                return false;
+                return_bound = self.upper.clone();
+                upper_outside_range = true;
             }
-        }
 
-        // check lower bound
-        for (index, element) in self.lower.iter().enumerate() {
+            // if self upper bound is smaller than rhs lower bound
             if element < rhs.lower.get(index).unwrap() {
-                return false;
+                panic!("self bound does not overlap with rhs bound")
             }
         }
 
-        true
+        // check self lower bound against rhs upper bound
+        for (index, element) in self.lower.iter().enumerate() {
+            // if self.lower element is smaller than rhs.lower element...
+            if element < rhs.lower.get(index).unwrap() {
+                return_bound = self.lower.clone();
+                lower_outside_range = true;
+            }
+
+            // if self lower bound is larger than rhs upper bound
+            if element > rhs.upper.get(index).unwrap() {
+                panic!("self bound does not overlap with rhs bound")
+            }
+        }
+
+        // both upper and lower bounds should not ever be outside the `rhs` bounds
+        if lower_outside_range && upper_outside_range {
+            panic!("self is either superset");
+        } else if lower_outside_range {
+            return Result::Err(self.lower.clone());
+        } else if upper_outside_range {
+            return Result::Err(self.upper.clone());
+        } else {
+            return Result::Ok(true);
+        }
     }
 
     /// Displaces hypercube bounds by `vector`
