@@ -4,6 +4,7 @@ use std::ops::{Add, AddAssign, Sub};
 use rand::distributions::Uniform;
 use rand::{thread_rng, Rng};
 
+use crate::bounds::HypercubeBounds;
 use std::slice::Iter;
 
 /// Defines a point data structure used to represent mathematical vectors that can be elementwise
@@ -176,6 +177,31 @@ impl Point {
         let mut result = self.clone();
         result.scale_in_place(scale_factor);
         result
+    }
+
+    pub fn clamp(&self, bound: &HypercubeBounds) -> Point {
+        assert_eq!(
+            self.dim(),
+            bound.get_upper().dim(),
+            "point dimensiona and bounds dimension do not match"
+        );
+
+        let mut clipped_vector: Vec<f64> = Vec::new();
+
+        for (index, element) in self.iter().enumerate() {
+            let upper_element = bound.get_upper().get(index).unwrap();
+            let lower_element = bound.get_lower().get(index).unwrap();
+
+            if element < lower_element {
+                clipped_vector.push(*lower_element);
+            } else if element > upper_element {
+                clipped_vector.push(*upper_element);
+            } else {
+                clipped_vector.push(*element);
+            }
+        }
+
+        Point::from_vec(clipped_vector)
     }
 }
 
