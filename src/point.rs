@@ -1,9 +1,3 @@
-/*
-Defines the Point data structure used to represent mathematical vectors that can be elementwise
-added, subtracted, multiplied, and divided. Once a point is created, it has a defined and
-unchangeable dimension which corresponds to the capacity of the underlying Vec<f64> attribute.
- */
-
 use std::cmp::Ordering;
 use std::ops::{Add, AddAssign, Sub};
 
@@ -12,6 +6,10 @@ use rand::{thread_rng, Rng};
 
 use std::slice::Iter;
 
+/// Defines a point data structure used to represent mathematical vectors that can be elementwise
+/// added, subtracted, multiplied, and divided. Once a point is created, it has a defined and
+/// unchangeable dimension which corresponds to the length of the ordered tuple the point
+/// represents.
 #[derive(Debug, PartialEq, Clone)]
 pub struct Point {
     dimension: u32,
