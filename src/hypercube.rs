@@ -111,7 +111,7 @@ impl Hypercube {
         let new_bounds: HypercubeBounds = self.current_bounds.displace_by(vector);
 
         // if new bounds are within the bounds that the hypercube was initialized with
-        if new_bounds.within(&self.init_bounds) {
+        if new_bounds.within(&self.init_bounds).is_ok() {
             // add vector to all points in population
             for point in self.population.iter_mut() {
                 *point += vector.clone();
