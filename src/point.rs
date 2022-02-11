@@ -290,4 +290,59 @@ mod tests {
     fn new_point_random_4() {
         let _a = Point::random(10, 10.0, 10.0);
     }
+
+    #[test]
+    fn clamp_1() {
+        let test_bounds = HypercubeBounds::new(3, 23.0, 34.0);
+        let test_point = point![50.0, 44.0, 900.0];
+
+        let calc_result = test_point.clamp(&test_bounds);
+        let expected_result = point![34.0; 3];
+
+        assert_eq!(calc_result, expected_result);
+    }
+
+    #[test]
+    fn clamp_2() {
+        let test_bounds = HypercubeBounds::new(3, 23.0, 34.0);
+        let test_point = point![50.0, 30.0, 29.3];
+
+        let calc_result = test_point.clamp(&test_bounds);
+        let expected_result = point![34.0, 30.0, 29.3];
+
+        assert_eq!(calc_result, expected_result);
+    }
+
+    #[test]
+    fn clamp_3() {
+        let test_bounds = HypercubeBounds::new(3, 23.0, 34.0);
+        let test_point = point![25.0, 26.4, 27.1];
+
+        let calc_result = test_point.clamp(&test_bounds);
+        let expected_result = test_point;
+
+        assert_eq!(calc_result, expected_result);
+    }
+
+    #[test]
+    fn clamp_4() {
+        let test_bounds = HypercubeBounds::new(3, 23.0, 34.0);
+        let test_point = point![3.0, 5.2, 2.3];
+
+        let calc_result = test_point.clamp(&test_bounds);
+        let expected_result = point![23.0; 3];
+
+        assert_eq!(calc_result, expected_result);
+    }
+
+    #[test]
+    fn clamp_5() {
+        let test_bounds = HypercubeBounds::new(3, 23.0, 34.0);
+        let test_point = point![50.0, 20.3, 30.2];
+
+        let calc_result = test_point.clamp(&test_bounds);
+        let expected_result = point![34.0, 23.0, 30.2];
+
+        assert_eq!(calc_result, expected_result);
+    }
 }
