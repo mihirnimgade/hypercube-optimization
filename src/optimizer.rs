@@ -87,7 +87,15 @@ impl HypercubeOptimizer {
         // start optimization loop and measure time
 
         // retrieve first hypercube
-        let first_hypercube = self.hypercubes.first_mut().unwrap();
+        // let first_hypercube = self.hypercubes.first_mut().unwrap();
+        println!(
+            "initial hypercube size: {}\n",
+            self.hypercube.diagonal_len()
+        );
+        println!(
+            "initial hypercube population size: {}\n",
+            self.hypercube.get_population_size()
+        );
 
         // start loop:
         for i in 0..max_hypercube_eval {
@@ -106,7 +114,11 @@ impl HypercubeOptimizer {
                 // if current best is worse than average best value skip iteration
                 // would want to reinitialize hypercube from here
                 // do not displace hypercube
+                println!("skipping displacement and reinitializing hypercube...\n");
                 continue;
+            } else {
+                println!("current best eval: {:#?}", current_best_eval);
+                println!("previous best eval: {:#?}", previous_best_eval);
             }
 
             // calculate difference between previous best and current best
@@ -122,6 +134,7 @@ impl HypercubeOptimizer {
                 // if the delta_f is within the tolerance consecutively more than 30 times, break
                 // optimization loop
                 if abs_delta_f_vec.len() >= 30 {
+                    println!("optimization process terminated due to image convergence");
                     break;
                 } else {
                     abs_delta_f_vec.clear();
@@ -163,7 +176,9 @@ impl HypercubeOptimizer {
 
         // return result struct
 
-        first_hypercube.peek_best_value().unwrap()
+        println!("final hypercube size: {}\n", self.hypercube.diagonal_len());
+
+        best_evaluations.peek().unwrap().clone()
     }
 
     fn calculate_convergence(&self) -> f64 {
