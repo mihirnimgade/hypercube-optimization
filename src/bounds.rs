@@ -54,17 +54,12 @@ impl HypercubeBounds {
     /// returns which bound (can only be one of the lower or upper bound point) is out of the
     /// `rhs` bound.
     ///
-    /// Panics if the `self` bound is a superset of the `rhs` bound or if there is no overlap
-    /// between the two bounds.
-    ///
     /// # Arguments
     ///
     /// * `self` - the bound that will be compared to `rhs`
     /// * `rhs` - second comparison bound
     ///
-    pub fn within(&self, rhs: &Self) -> Result<bool, Point> {
-        let mut return_bound: Point;
-
+    pub fn within(&self, rhs: &Self) -> BoundsOverlap {
         let mut lower_outside_range = false;
         let mut upper_outside_range = false;
 
@@ -72,13 +67,12 @@ impl HypercubeBounds {
         for (index, element) in self.upper.iter().enumerate() {
             // if self upper bound is bigger than rhs.upper element...
             if element > rhs.upper.get(index).unwrap() {
-                return_bound = self.upper.clone();
                 upper_outside_range = true;
             }
 
-            // if self upper bound is smaller than rhs lower bound
+            // if any self upper bound element is smaller than any rhs lower bound element
             if element < rhs.lower.get(index).unwrap() {
-                panic!("self bound does not overlap with rhs bound")
+                return BoundsOverlap::BothOutOfBounds;
             }
         }
 
@@ -86,26 +80,25 @@ impl HypercubeBounds {
         for (index, element) in self.lower.iter().enumerate() {
             // if self.lower element is smaller than rhs.lower element...
             if element < rhs.lower.get(index).unwrap() {
-                return_bound = self.lower.clone();
                 lower_outside_range = true;
             }
 
             // if self lower bound is larger than rhs upper bound
             if element > rhs.upper.get(index).unwrap() {
-                panic!("self bound does not overlap with rhs bound")
+                return BoundsOverlap::BothOutOfBounds;
             }
         }
 
         // both upper and lower bounds should not ever be outside the `rhs` bounds
-        if lower_outside_range && upper_outside_range {
-            panic!("self is either superset");
+        return if lower_outside_range && upper_outside_range {
+            BoundsOverlap::BothOutOfBounds
         } else if lower_outside_range {
-            return Result::Err(self.lower.clone());
+            BoundsOverlap::LowerOutOfBounds
         } else if upper_outside_range {
-            return Result::Err(self.upper.clone());
+            BoundsOverlap::UpperOutOfBounds
         } else {
-            return Result::Ok(true);
-        }
+            BoundsOverlap::NoneOutOfBounds
+        };
     }
 
     /// Displaces hypercube bounds by `vector`
@@ -330,14 +323,14 @@ mod tests {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
         let b = HypercubeBounds::new(3, -10.0, 200.0);
 
-        assert_eq!(a.within(&b), Result::Ok(true));
+        assert_eq!(a.within(&b), BoundsOverlap::NoneOutOfBounds);
     }
 
     #[test]
     fn within_equal() {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
 
-        assert_eq!(a.within(&a), Result::Ok(true));
+        assert_eq!(a.within(&a), BoundsOverlap::NoneOutOfBounds);
     }
 
     #[test]
@@ -345,7 +338,7 @@ mod tests {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
         let b = HypercubeBounds::new(3, 100.0, 200.0);
 
-        assert_eq!(a.within(&b), Result::Err(a.lower));
+        assert_eq!(a.within(&b), BoundsOverlap::LowerOutOfBounds);
     }
 
     #[test]
@@ -353,16 +346,15 @@ mod tests {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
         let b = HypercubeBounds::new(3, -10.0, 90.0);
 
-        assert_eq!(a.within(&b), Result::Err(a.upper));
+        assert_eq!(a.within(&b), BoundsOverlap::UpperOutOfBounds);
     }
 
     #[test]
-    #[should_panic]
     fn not_within_superset() {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
         let b = HypercubeBounds::new(3, 30.0, 90.0);
 
-        let result = a.within(&b);
+        assert_eq!(a.within(&b), BoundsOverlap::BothOutOfBounds);
     }
 
     #[test]
