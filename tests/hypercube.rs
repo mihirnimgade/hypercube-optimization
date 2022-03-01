@@ -10,31 +10,31 @@ fn eight_corners() {
     test_hypercube.shrink(0.50);
 
     test_hypercube
-        .displace_to(&point![30.0, 30.0, 30.0])
-        .unwrap();
+        .try_displace_to(&point![30.0, 30.0, 30.0])
+        .is_ok();
     test_hypercube
-        .displace_to(&point![30.0, 30.0, 90.0])
+        .try_displace_to(&point![30.0, 30.0, 90.0])
+        .is_ok();
+
+    test_hypercube
+        .try_displace_to(&point![30.0, 90.0, 30.0])
+        .is_ok();
+    test_hypercube
+        .try_displace_to(&point![30.0, 90.0, 90.0])
         .unwrap();
 
     test_hypercube
-        .displace_to(&point![30.0, 90.0, 30.0])
+        .try_displace_to(&point![90.0, 30.0, 30.0])
         .unwrap();
     test_hypercube
-        .displace_to(&point![30.0, 90.0, 90.0])
-        .unwrap();
-
-    test_hypercube
-        .displace_to(&point![90.0, 30.0, 30.0])
-        .unwrap();
-    test_hypercube
-        .displace_to(&point![90.0, 30.0, 90.0])
+        .try_displace_to(&point![90.0, 30.0, 90.0])
         .unwrap();
 
     test_hypercube
-        .displace_to(&point![90.0, 90.0, 30.0])
+        .try_displace_to(&point![90.0, 90.0, 30.0])
         .unwrap();
     test_hypercube
-        .displace_to(&point![90.0, 90.0, 90.0])
+        .try_displace_to(&point![90.0, 90.0, 90.0])
         .unwrap();
 }
 
@@ -47,7 +47,7 @@ fn eight_corners_panic() {
     test_hypercube.shrink(0.51);
 
     test_hypercube
-        .displace_to(&point![30.0, 30.0, 30.0])
+        .try_displace_to(&point![30.0, 30.0, 30.0])
         .unwrap();
 }
 
@@ -83,7 +83,7 @@ fn displace_to_1() {
     let mut test_hypercube = Hypercube::new(5, 0.0, 105.0);
     let small_vector = point![52.6; 5];
 
-    assert!(test_hypercube.displace_to(&small_vector).is_err());
+    assert!(test_hypercube.try_displace_to(&small_vector).is_err());
 }
 
 #[test]
