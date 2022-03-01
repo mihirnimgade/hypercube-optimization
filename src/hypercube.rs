@@ -283,6 +283,14 @@ impl Hypercube {
     pub fn has_shrunk(&self) -> bool {
         self.current_bounds != self.init_bounds
     }
+
+    pub fn diagonal_len(&self) -> f64 {
+        self.diagonal.len()
+    }
+
+    pub fn get_population_size(&self) -> u64 {
+        self.population_size
+    }
 }
 
 impl fmt::Display for Hypercube {
