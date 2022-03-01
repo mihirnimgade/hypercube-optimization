@@ -166,8 +166,8 @@ impl HypercubeOptimizer {
 
             // shrink hypercube
 
-            // TODO: fix constant shrinking
-            first_hypercube.shrink(0.80);
+            // TODO: change constant shrinking factor to be dynamic
+            self.hypercube.shrink(0.40);
 
             // reset current best, set previous best equal to current best
             previous_best_eval = current_best_eval;
