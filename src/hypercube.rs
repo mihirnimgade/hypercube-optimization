@@ -1,11 +1,14 @@
 use std::collections::BinaryHeap;
 use std::fmt;
 
-use crate::bounds::HypercubeBounds;
+use crate::bounds::{BoundType, HypercubeBounds};
 use crate::evaluation::PointEval;
 use crate::point;
 use crate::point::Point;
 use ordered_float::NotNan;
+
+use crate::bounds::BoundType::LowerBound;
+use crate::bounds::BoundsOverlap;
 
 pub struct Hypercube {
     dimension: u32,
@@ -111,30 +114,36 @@ impl Hypercube {
         let new_bounds: HypercubeBounds = self.current_bounds.displace_by(vector);
 
         // if new bounds are within the bounds that the hypercube was initialized with
-        if new_bounds.within(&self.init_bounds).is_ok() {
-            // add vector to all points in population
-            for point in self.population.iter_mut() {
-                *point += vector.clone();
+        match new_bounds.within(&self.init_bounds) {
+            BoundsOverlap::NoneOutOfBounds => {
+                // add vector to all points in population
+                for point in self.population.iter_mut() {
+                    *point += vector.clone();
+                }
+
+                // current bounds should now be new_bounds
+                self.current_bounds = new_bounds;
+
+                // alter center value
+                self.center += vector.clone();
+
+                // wipe out previous evaluation results
+                self.values.clear();
+                self.ordered_values.clear();
+
+                // calculate new diagonal
+                self.diagonal = self.current_bounds.get_upper() - self.current_bounds.get_lower();
+
+                Ok(())
             }
-
-            // current bounds should now be new_bounds
-            self.current_bounds = new_bounds;
-
-            // alter center value
-            self.center += vector.clone();
-
-            // wipe out previous evaluation results
-            self.values.clear();
-            self.ordered_values.clear();
-
-            Ok(())
-        } else {
-            Err("cannot displace, displacement results in hypercube out of bounds")
+            _ => Err("cannot displace, displacement results in hypercube out of bounds"),
         }
     }
 
     /// Displaces the hypercube by moving the center to the `destination` argument.
-    pub fn displace_to(&mut self, destination: &Point) -> Result<(), &'static str> {
+    pub fn try_displace_to(&mut self, destination: &Point) -> Result<(), &'static str> {
+        // TODO: should make sure destination is not outside of initial bounds
+
         // ensures the destination vector is the correct dimension
         assert_eq!(
             destination.dim() as u32,
