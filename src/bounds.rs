@@ -153,6 +153,68 @@ impl HypercubeBounds {
     pub fn get_upper(&self) -> &Point {
         &self.upper
     }
+
+    pub fn dim(&self) -> u32 {
+        self.upper.dim()
+    }
+
+    pub fn get(&self, bound: &BoundType) -> &Point {
+        match bound {
+            BoundType::LowerBound => &self.lower,
+            BoundType::UpperBound => &self.upper,
+        }
+    }
+
+    fn clamp_upper(&self, limit: &HypercubeBounds) -> HypercubeBounds {
+        // calculate new upper bound by clamping to the limit bound
+        let new_upper = self.upper.clamp(limit);
+
+        // figure out how far the new upper bound moved so that the lower bound moves the
+        // same distance
+        let old_upper_to_new_upper = &new_upper - &self.upper;
+
+        let new_lower = &self.lower + &old_upper_to_new_upper;
+
+        HypercubeBounds::from_points(new_lower, new_upper)
+    }
+
+    fn clamp_lower(&self, limit: &HypercubeBounds) -> HypercubeBounds {
+        // calculate new upper bound by clamping to the limit bound
+        let new_lower = self.lower.clamp(limit);
+
+        // figure out how far the new upper bound moved so that the lower bound is displaced
+        // by the same distance
+        let old_lower_to_new_lower = &new_lower - &self.lower;
+
+        let new_upper = &self.upper + &old_lower_to_new_lower;
+
+        HypercubeBounds::from_points(new_lower, new_upper)
+    }
+
+    pub fn clamp(&self, limit: &HypercubeBounds) -> HypercubeBounds {
+        assert_eq!(
+            self.upper.dim(),
+            limit.upper.dim(),
+            "self bounds dimension and limit bounds dimension are not equal"
+        );
+
+        match self.within(limit) {
+            // if there's nothing out of bounds, do nothing
+            BoundsOverlap::NoneOutOfBounds => self.clone(),
+
+            // if the upper bound is out of bounds, clamp it
+            BoundsOverlap::UpperOutOfBounds => self.clamp_upper(limit),
+
+            // if the lower bound is out of bounds, clamp it
+            BoundsOverlap::LowerOutOfBounds => self.clamp_lower(limit),
+
+            // if both bounds are out of bounds, clamp them
+            BoundsOverlap::BothOutOfBounds => {
+                let lower_clamp_result = self.clamp_lower(limit);
+                self.clamp_upper(&lower_clamp_result)
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -292,11 +354,85 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn not_within_no_overlap() {
         let a = HypercubeBounds::new(3, 0.0, 120.0);
         let b = HypercubeBounds::new(3, -10.0, -5.0);
 
-        let result = a.within(&b);
+        assert_eq!(a.within(&b), BoundsOverlap::BothOutOfBounds);
+    }
+
+    // <----- .clamp() tests ----->
+
+    #[test]
+    fn clamp_subset() {
+        let new_bounds = HypercubeBounds::new(3, 30.0, 60.0);
+        let init_bounds = HypercubeBounds::new(3, 0.0, 120.0);
+
+        let calculated_result = new_bounds.clamp(&init_bounds);
+
+        // clamp shouldn't change `new_bounds`
+        let expected_result = new_bounds.clone();
+
+        assert_eq!(calculated_result, expected_result);
+    }
+
+    #[test]
+    fn clamp_both_out_of_bounds() {
+        let mut new_bounds = HypercubeBounds::new(3, 0.0, 120.0);
+        let init_bounds = HypercubeBounds::new(3, 0.0, 120.0);
+
+        new_bounds.scale_in_place(0.5);
+        new_bounds.displace_by_in_place(&point![60.0, 60.0, -60.0]);
+
+        let calculated_result = new_bounds.clamp(&init_bounds);
+
+        let expected_result =
+            HypercubeBounds::from_points(point![60.0, 60.0, 0.0], point![120.0, 120.0, 60.0]);
+
+        assert_eq!(calculated_result, expected_result);
+        assert_eq!(
+            calculated_result.get_diagonal().len(),
+            expected_result.get_diagonal().len()
+        )
+    }
+
+    #[test]
+    fn clamp_upper_out_of_bounds() {
+        let mut new_bounds = HypercubeBounds::new(3, 0.0, 120.0);
+        let init_bounds = HypercubeBounds::new(3, 0.0, 120.0);
+
+        new_bounds.scale_in_place(0.5);
+        new_bounds.displace_by_in_place(&point![60.0, 60.0, 60.0]);
+
+        let calculated_result = new_bounds.clamp(&init_bounds);
+
+        let expected_result =
+            HypercubeBounds::from_points(point![60.0, 60.0, 60.0], point![120.0, 120.0, 120.0]);
+
+        assert_eq!(calculated_result, expected_result);
+        assert_eq!(
+            calculated_result.get_diagonal().len(),
+            expected_result.get_diagonal().len()
+        );
+    }
+
+    #[test]
+    fn clamp_lower_out_of_bounds() {
+        let mut new_bounds = HypercubeBounds::new(3, 0.0, 120.0);
+        let init_bounds = HypercubeBounds::new(3, 0.0, 120.0);
+
+        new_bounds.scale_in_place(0.5);
+        new_bounds.displace_by_in_place(&point![-60.0, -60.0, -60.0]);
+
+        let calculated_result = new_bounds.clamp(&init_bounds);
+
+        let expected_result =
+            HypercubeBounds::from_points(point![0.0, 0.0, 0.0], point![60.0, 60.0, 60.0]);
+
+        assert_eq!(calculated_result, expected_result);
+        assert_eq!(
+            calculated_result.get_diagonal().len(),
+            expected_result.get_diagonal().len()
+        );
     }
 }
