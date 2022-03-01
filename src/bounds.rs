@@ -10,6 +10,20 @@ pub struct HypercubeBounds {
     upper: Point,
 }
 
+#[derive(Debug, PartialEq)]
+pub enum BoundType {
+    LowerBound,
+    UpperBound,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum BoundsOverlap {
+    UpperOutOfBounds,
+    LowerOutOfBounds,
+    BothOutOfBounds,
+    NoneOutOfBounds,
+}
+
 impl HypercubeBounds {
     /// Creates a new HypercubeBounds struct
     pub fn new(dimension: u32, lower: f64, upper: f64) -> Self {
