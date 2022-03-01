@@ -1,11 +1,9 @@
-/*
-Defines the HypercubeBounds struct along with its functions for use inside the Hypercube
-implementation.
- */
-
+use crate::hypercube::Hypercube;
 use crate::point;
 use crate::point::Point;
 
+/// `HypercubeBounds` defines the bounds spanned by a hypercube and abstractly represents the
+/// ordered tuple of the hypercube's lower and upper bounds
 #[derive(Clone, Debug, PartialEq)]
 pub struct HypercubeBounds {
     lower: Point,
