@@ -10,7 +10,7 @@ pub struct HypercubeOptimizer {
     dimension: u32,
     init_point: Point,
     /// list of hypercubes created by the optimizer
-    hypercubes: Vec<Hypercube>,
+    hypercube: Hypercube,
     /// minimum acceptable tolerance for the difference between X inputs between iterations
     tol_x: f64,
     tol_f: f64,
@@ -51,14 +51,10 @@ impl HypercubeOptimizer {
         // create initial hypercube based on initial bounds and place inside vector
         let hypercube = Hypercube::new(init_point.dim(), lower_bound, upper_bound);
 
-        // TODO: change this so that its different depending on certain factors
-        let mut hypercube_vector: Vec<Hypercube> = Vec::with_capacity(256);
-        hypercube_vector.push(hypercube);
-
         Self {
             dimension: init_point.dim(),
             init_point,
-            hypercubes: hypercube_vector,
+            hypercube,
             tol_x,
             tol_f,
             max_eval,
@@ -101,14 +97,23 @@ impl HypercubeOptimizer {
 
         // start loop:
         for i in 0..max_hypercube_eval {
-            println!("Loop {} of {}", i, max_hypercube_eval);
+            println!("-------- loop {} of {} --------\n", i, max_hypercube_eval);
+
+            // <----- hypercube randomize ----->
+
+            self.hypercube.randomize_pop();
 
             // <----- hypercube evaluation ----->
 
-            first_hypercube.evaluate(self.objective_function);
+            self.hypercube.evaluate(self.objective_function);
 
             // get best eval
-            let current_best_eval = first_hypercube.peek_best_value().unwrap();
+            let current_best_eval = self.hypercube.peek_best_value().unwrap();
+
+            best_evaluations.push(current_best_eval.clone());
+
+            // calculate new average
+            average_f = average_f + (current_best_eval.get_eval() - average_f) / ((i + 1) as f64);
 
             // compare to previous image and argument (will be PointEval struct)
             if current_best_eval.get_eval() <= average_f || current_best_eval <= previous_best_eval
@@ -126,9 +131,6 @@ impl HypercubeOptimizer {
             // calculate difference between previous best and current best
             let abs_delta_f = (current_best_eval.get_eval() - previous_best_eval.get_eval()).abs();
 
-            println!("Current best eval {:?}", current_best_eval);
-            println!("Previous best eval {:?}", previous_best_eval);
-
             // TODO: can definitely write this better
             if abs_delta_f <= self.tol_f {
                 abs_delta_f_vec.push(abs_delta_f);
@@ -142,9 +144,6 @@ impl HypercubeOptimizer {
                     abs_delta_f_vec.clear();
                 }
             }
-
-            // calculate new average
-            average_f = average_f + (current_best_eval.get_eval() - average_f) / ((i + 1) as f64);
 
             // compute new hypercube center (will be the average of old and new best value)
             let temp = &current_best_eval.get_point() + &previous_best_eval.get_point();
