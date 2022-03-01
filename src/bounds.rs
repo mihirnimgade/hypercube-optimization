@@ -25,7 +25,7 @@ pub enum BoundsOverlap {
 }
 
 impl HypercubeBounds {
-    /// Creates a new HypercubeBounds struct
+    /// Create new `HypercubeBounds` with `dimension`
     pub fn new(dimension: u32, lower: f64, upper: f64) -> Self {
         assert!(
             upper > lower,
