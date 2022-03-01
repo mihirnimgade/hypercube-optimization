@@ -150,6 +150,71 @@ impl Hypercube {
         self.displace_by(&center_to_destination)
     }
 
+    /// Displaces hypercube to any destination but makes sure hypercube stays within its
+    /// initial bound
+    pub fn displace_to(&mut self, destination: &Point) {
+        // TODO: write tests for this method
+        // TODO: make this use raw_displace_to
+
+        // ensures the destination vector is the correct dimension
+        assert_eq!(
+            destination.dim() as u32,
+            self.dimension,
+            "vector is not the correct size. \
+            expected {}, got {}.",
+            self.dimension,
+            destination.dim()
+        );
+
+        let center_to_destination = destination - &self.center;
+
+        // test adding destination vector to current bounds
+        let new_bounds: HypercubeBounds = self.current_bounds.displace_by(&center_to_destination);
+
+        // if new bounds are within the bounds that the hypercube was initialized with
+        match new_bounds.within(&self.init_bounds) {
+            BoundsOverlap::NoneOutOfBounds => {
+                self.raw_displace_to(&center_to_destination);
+            }
+            _ => {
+                // clamp new_bounds to self.init_bounds
+                let clamped_bounds = new_bounds.clamp(&self.init_bounds);
+
+                // calculate how far the bounds moved when clamped
+                let old_bounds_to_clamped_bounds = clamped_bounds.get(&BoundType::LowerBound)
+                    - new_bounds.get(&BoundType::LowerBound);
+
+                self.raw_displace_to(&old_bounds_to_clamped_bounds);
+            }
+        }
+    }
+
+    /// Displaces the hypercube without any bounds checking
+    fn raw_displace_to(&mut self, destination: &Point) {
+        let center_to_destination = destination - &self.center;
+
+        // add vector to bounds
+        let new_bounds = self.current_bounds.displace_by(&center_to_destination);
+
+        // current bounds should now be new_bounds
+        self.current_bounds = new_bounds;
+
+        // add destination to center
+        self.center += center_to_destination.clone();
+
+        // add destination to population
+        for point in self.population.iter_mut() {
+            *point += center_to_destination.clone();
+        }
+
+        // wipe out previous evaluation results
+        self.values.clear();
+        self.ordered_values.clear();
+
+        // calculate new diagonal
+        self.diagonal = self.current_bounds.get_upper() - self.current_bounds.get_lower();
+    }
+
     /// Shrinks the hypercube by the given `factor`. This eliminates the previously computed
     /// hypercube values.
     pub fn shrink(&mut self, factor: f64) {
