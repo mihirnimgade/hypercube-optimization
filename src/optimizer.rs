@@ -153,11 +153,9 @@ impl HypercubeOptimizer {
 
             // <----- hypercube displacement ----->
 
-            let displacement_result = first_hypercube.displace_to(&new_hypercube_center);
-
-            match displacement_result {
-                Ok(_) => (),
-                Err(s) => panic!("{}", s),
+            if self.hypercube.has_shrunk() {
+                println!("attempting displacement to {:#?}", new_hypercube_center);
+                self.hypercube.displace_to(&new_hypercube_center);
             }
 
             // <----- hypercube shrink ----->
