@@ -183,7 +183,7 @@ impl Point {
         assert_eq!(
             self.dim(),
             bound.get_upper().dim(),
-            "point dimensiona and bounds dimension do not match"
+            "point dimension and bounds dimension do not match"
         );
 
         let mut clipped_vector: Vec<f64> = Vec::new();
