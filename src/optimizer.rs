@@ -79,6 +79,8 @@ impl HypercubeOptimizer {
         // keep running score of average image
         let mut average_f = 0.0;
 
+        let mut best_evaluations: BinaryHeap<PointEval> = BinaryHeap::new();
+
         // records absolute change in F to compare with tolF
         let mut abs_delta_f_vec = Vec::with_capacity(30);
 
