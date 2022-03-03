@@ -163,7 +163,6 @@ impl Hypercube {
     /// initial bound
     pub fn displace_to(&mut self, destination: &Point) {
         // TODO: write tests for this method
-        // TODO: make this use raw_displace_to
 
         // ensures the destination vector is the correct dimension
         assert_eq!(
@@ -388,5 +387,34 @@ mod tests {
     fn leakage_1() {
         // check whether the hypercube points stay within the hypercube bounds at all times
         todo!()
+    }
+
+    #[test]
+    fn test_best_value_ordering() {
+        let dim = 3;
+        let mut hut = Hypercube::new(dim, -5.0, 5.0);
+
+        hut.evaluate(rastrigin);
+
+        // list will start with the biggest value
+        let mut evals: Vec<PointEval> = Vec::new();
+
+        loop {
+            let best_value = hut.pop_best_value();
+            if best_value == None {
+                break;
+            }
+
+            evals.push(best_value.unwrap());
+        }
+
+        let mut prev_val = PointEval::new(point![0.0; dim], NotNan::new(f64::MAX).unwrap());
+        for eval in evals {
+            assert!(
+                eval <= prev_val,
+                "list is not in decreasing order as expected"
+            );
+            prev_val = eval;
+        }
     }
 }
