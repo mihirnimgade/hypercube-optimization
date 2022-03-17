@@ -68,16 +68,13 @@ impl HypercubeOptimizer {
     pub fn maximize(&mut self) -> PointEval {
         // evaluate initial point and store value inside special struct
         let init_eval = PointEval::new_with_eval(self.init_point.clone(), self.objective_function);
-        let mut previous_best_eval = init_eval;
 
         // should take max_eval into consideration and not evaluate the function more times than that
 
         // TODO: compute no. of allowed hypercube evaluations from (max_eval and number of points in hypercube)
-        let max_eval = 1000;
-        let max_hypercube_eval = 40;
 
         // keep running score of average image
-        let mut average_f = 0.0;
+        let mut average_f = init_eval.get_eval();
 
         let mut best_evaluations: BinaryHeap<PointEval> = BinaryHeap::new();
 
@@ -97,9 +94,11 @@ impl HypercubeOptimizer {
             self.hypercube.get_population_size()
         );
 
+        let mut previous_best_eval = init_eval;
+
         // start loop:
-        for i in 0..max_hypercube_eval {
-            println!("-------- loop {} of {} --------\n", i, max_hypercube_eval);
+        for i in 0..self.max_eval {
+            println!("-------- loop {} of {} --------\n", i, self.max_eval);
 
             // <----- hypercube randomize ----->
 
@@ -115,11 +114,10 @@ impl HypercubeOptimizer {
             best_evaluations.push(current_best_eval.clone());
 
             // calculate new average
-            average_f = average_f + (current_best_eval.get_eval() - average_f) / ((i + 1) as f64);
+            average_f = average_f + ((current_best_eval.get_eval() - average_f) / ((i + 1) as f64));
 
             // compare to previous image and argument (will be PointEval struct)
-            if current_best_eval.get_eval() <= average_f || current_best_eval <= previous_best_eval
-            {
+            if current_best_eval.get_eval() < average_f || current_best_eval < previous_best_eval {
                 // if current best is worse than average best value skip iteration
                 // would want to reinitialize hypercube from here
                 // do not displace hypercube
