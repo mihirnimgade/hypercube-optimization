@@ -14,6 +14,11 @@ pub fn rastrigin(input_point: &Point) -> f64 {
     10.0 * dimension as f64 + sum
 }
 
+pub fn neg_rastrigin(input_point: &Point) -> f64 {
+    let res = rastrigin(input_point);
+    res * -1.0
+}
+
 pub fn nan_function(input_point: &Point) -> f64 {
     f64::NAN
 }
