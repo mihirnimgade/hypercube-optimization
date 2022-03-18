@@ -36,7 +36,7 @@ impl Hypercube {
             HypercubeBounds::new(dimension, lower_bound, upper_bound);
 
         // TODO: replace with function that takes dimension and bounds and returns number of hypercube points
-        let num_points = dimension * ((upper_bound - lower_bound) as u32);
+        let num_points = dimension.pow(3) * ((upper_bound - lower_bound) as u32);
 
         // calculate the hypercube's diagonal
         let hypercube_diagonal: Point =
