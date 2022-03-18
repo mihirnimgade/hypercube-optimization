@@ -180,7 +180,8 @@ impl HypercubeOptimizer {
         best_evaluations.peek().unwrap().clone()
     }
 
-    fn calculate_convergence(&self) -> f64 {
-        todo!()
+    fn calculate_convergence(renormalized_distance: f64) -> f64 {
+        let s = 1.0 - (0.2 * E.powf((-3.0 * renormalized_distance) as f32));
+        s as f64
     }
 }
