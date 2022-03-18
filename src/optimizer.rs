@@ -4,6 +4,7 @@ use crate::point::Point;
 use crate::result::HypercubeOptimizerResult;
 use ordered_float::NotNan;
 use std::collections::BinaryHeap;
+use std::f32::consts::E;
 
 pub struct HypercubeOptimizer {
     /// dimension of the optimization problem
@@ -66,7 +67,6 @@ impl HypercubeOptimizer {
     }
 
     pub fn maximize(&mut self) -> PointEval {
-        // evaluate initial point and store value inside special struct
         let init_eval = PointEval::new_with_eval(self.init_point.clone(), self.objective_function);
 
         // should take max_eval into consideration and not evaluate the function more times than that
@@ -83,8 +83,6 @@ impl HypercubeOptimizer {
 
         // start optimization loop and measure time
 
-        // retrieve first hypercube
-        // let first_hypercube = self.hypercubes.first_mut().unwrap();
         println!(
             "initial hypercube size: {}\n",
             self.hypercube.diagonal_len()
@@ -116,11 +114,9 @@ impl HypercubeOptimizer {
             // calculate new average
             average_f = average_f + ((current_best_eval.get_eval() - average_f) / ((i + 1) as f64));
 
-            // compare to previous image and argument (will be PointEval struct)
+            // compare to previous eval
             if current_best_eval.get_eval() < average_f || current_best_eval < previous_best_eval {
-                // if current best is worse than average best value skip iteration
-                // would want to reinitialize hypercube from here
-                // do not displace hypercube
+                // if current best is worse than average best value skip hypercube displacement and shrink
                 println!("skipping displacement and reinitializing hypercube...\n");
                 continue;
             } else {
@@ -131,7 +127,6 @@ impl HypercubeOptimizer {
             // calculate difference between previous best and current best
             let abs_delta_f = (current_best_eval.get_eval() - previous_best_eval.get_eval()).abs();
 
-            // TODO: can definitely write this better
             if abs_delta_f <= self.tol_f {
                 abs_delta_f_vec.push(abs_delta_f);
 
@@ -145,39 +140,76 @@ impl HypercubeOptimizer {
                 }
             }
 
+            // <----- hypercube displace preparation ----->
+
             // compute new hypercube center (will be the average of old and new best value)
             let temp = &current_best_eval.get_point() + &previous_best_eval.get_point();
             let new_hypercube_center = temp.scale(0.5);
 
-            // <----- hypercube displacement ----->
+            // <----- hypercube shrink preparation ----->
 
-            if self.hypercube.has_shrunk() {
-                println!("attempting displacement to {:#?}", new_hypercube_center);
-                self.hypercube.displace_to(&new_hypercube_center);
-            }
+            // compute normalized values
+
+            // X_n
+            let previous_normalized = (&previous_best_eval.get_point()
+                - self.hypercube.get_center())
+            .scale(1.0 / self.hypercube.get_side_length());
+
+            // X_min_n
+            let current_normalized = (&current_best_eval.get_point() - self.hypercube.get_center())
+                .scale(1.0 / self.hypercube.get_side_length());
+
+            // compute normalized distance
+            let normalized_sqr_diff = (&(&current_normalized - &previous_normalized)
+                * &(&current_normalized - &previous_normalized));
+
+            let sum_normalized_sqr_diff = normalized_sqr_diff.sum();
+
+            let normalized_distance =
+                sum_normalized_sqr_diff.powf(0.5) / self.hypercube.get_side_length();
+
+            // compute renormalized distance
+            let renormalized_distance = normalized_distance / ((self.dimension as f64).sqrt());
+
+            // compute convergence factor
+            let convergence_factor =
+                HypercubeOptimizer::calculate_convergence(renormalized_distance);
+
+            println!("{}", self.hypercube);
+
+            println!(
+                ">>> Previous eval point: {:?}",
+                previous_best_eval.get_point()
+            );
+            println!(
+                ">>> Current eval point: {:?}",
+                current_best_eval.get_point()
+            );
+            println!(">>> Previous normalized: {:?}", previous_normalized);
+            println!(">>> Current normalized: {:?}", current_normalized);
+            println!(">>> Normalized distance: {}", normalized_distance);
+            println!(">>> Renormalized distance: {}", renormalized_distance);
+            println!(">>> Convergence factor: {}\n", convergence_factor);
+
+            // <----- hypercube displace ----->
+
+            println!("attempting displacement to {:#?}", new_hypercube_center);
+            self.hypercube.displace_to(&new_hypercube_center);
 
             // <----- hypercube shrink ----->
 
-            // compute renormalised distance
+            self.hypercube.shrink(convergence_factor);
 
-            // compute convergence factor
-
-            // shrink hypercube
-
-            // TODO: change constant shrinking factor to be dynamic
-            self.hypercube.shrink(0.40);
-
-            // reset current best, set previous best equal to current best
             previous_best_eval = current_best_eval;
 
             // end loop:
         }
 
-        // return result struct
-
         println!("final hypercube size: {}\n", self.hypercube.diagonal_len());
 
-        best_evaluations.peek().unwrap().clone()
+        let res = best_evaluations.peek().unwrap().clone();
+
+        res
     }
 
     fn calculate_convergence(renormalized_distance: f64) -> f64 {
