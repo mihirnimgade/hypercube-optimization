@@ -151,6 +151,17 @@ impl HypercubeBounds {
         &self.upper - &self.lower
     }
 
+    pub fn get_length(&self) -> f64 {
+        let diagonal = self.get_diagonal();
+
+        // TODO: confirm this is correct
+        // adding all the diagonal elements and dividing by their dimension should give
+        // the value of one of the elements since all elements in the diagonal should be the
+        // same due to the bounds invariant where whatever happens to the lower bound also
+        // happens to the upper bound
+        diagonal.sum() as f64 / diagonal.dim() as f64
+    }
+
     pub fn get_lower(&self) -> &Point {
         &self.lower
     }
