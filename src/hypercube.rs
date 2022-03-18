@@ -299,6 +299,14 @@ impl Hypercube {
     pub fn get_population_size(&self) -> u64 {
         self.population_size
     }
+
+    pub fn get_center(&self) -> &Point {
+        &self.center
+    }
+
+    pub fn get_side_length(&self) -> f64 {
+        self.current_bounds.get_length()
+    }
 }
 
 impl fmt::Display for Hypercube {
