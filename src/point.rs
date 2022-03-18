@@ -251,6 +251,16 @@ impl Point {
 
         Point::from_vec(clipped_vector)
     }
+
+    pub fn sum(&self) -> f64 {
+        let mut result = 0.0;
+
+        for element in self.iter() {
+            result += element;
+        }
+
+        result
+    }
 }
 
 /* Comparison function */
