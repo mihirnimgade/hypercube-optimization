@@ -313,8 +313,10 @@ impl fmt::Display for Hypercube {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Dimension: {}\nCurrent bounds: {:?}\
-            \nCenter: {:?}\nDiagonal length: {:.2}\nPopulation size: {}\nValues: {:?}\n",
+            ">>> HYPERCUBE START:\n\
+            Dimension: {}\nCurrent bounds: {:?}\
+            \nCenter: {:?}\nDiagonal length: {:.2}\nPopulation size: {}\nValues: {:?}\n\
+            <<< HYPERCUBE END\n",
             self.dimension,
             self.current_bounds,
             self.center,
