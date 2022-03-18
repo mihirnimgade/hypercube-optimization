@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use std::ops::{Add, AddAssign, Sub};
+use std::ops::{Add, AddAssign, Div, Mul, Sub};
 
 use rand::distributions::Uniform;
 use rand::{thread_rng, Rng};
@@ -17,7 +17,7 @@ pub struct Point {
     coords: Box<[f64]>,
 }
 
-/* Trait implementation for mathematical operations */
+/* Trait implementations for mathematical operations */
 
 impl<'a, 'b> Add<&'b Point> for &'a Point {
     type Output = Point;
@@ -64,6 +64,54 @@ impl<'a, 'b> Sub<&'b Point> for &'a Point {
         }
 
         Point::from_vec(sub_result)
+    }
+}
+
+impl<'a, 'b> Mul<&'b Point> for &'a Point {
+    type Output = Point;
+
+    fn mul(self, other: &'b Point) -> Point {
+        // points need to have the same dimension to be multiplied together
+        assert_eq!(
+            self.dimension, other.dimension,
+            "element-wise multiplication failed: operands do not have same dimension"
+        );
+        assert_ne!(
+            self.dimension, 0,
+            "element-wise multiplication failed: point dimension cannot be zero"
+        );
+
+        let mut mul_result = Vec::new();
+
+        for (index, element) in self.coords.iter().enumerate() {
+            mul_result.push(element * other.get(index).unwrap());
+        }
+
+        Point::from_vec(mul_result)
+    }
+}
+
+impl<'a, 'b> Div<&'b Point> for &'a Point {
+    type Output = Point;
+
+    fn div(self, other: &'b Point) -> Point {
+        // points need to have the same dimension to be divided together
+        assert_eq!(
+            self.dimension, other.dimension,
+            "element-wise division failed: operands do not have same dimension"
+        );
+        assert_ne!(
+            self.dimension, 0,
+            "element-wise division failed: point dimension cannot be zero"
+        );
+
+        let mut div_result = Vec::new();
+
+        for (index, element) in self.coords.iter().enumerate() {
+            div_result.push(element / other.get(index).unwrap());
+        }
+
+        Point::from_vec(div_result)
     }
 }
 
