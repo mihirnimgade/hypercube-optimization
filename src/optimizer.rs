@@ -117,8 +117,9 @@ impl HypercubeOptimizer {
                 self.hypercube.randomize_pop();
                 continue;
             } else {
-                println!("current best eval: {:#?}", current_best_eval);
-                println!("previous best eval: {:#?}", previous_best_eval);
+                println!("-------- loop {} of {} --------\n", i, self.max_eval);
+                println!("current best eval: {}", current_best_eval);
+                println!("previous best eval: {}", previous_best_eval);
             }
 
             // calculate difference between previous best and current best
@@ -172,20 +173,6 @@ impl HypercubeOptimizer {
             let convergence_factor =
                 HypercubeOptimizer::calculate_convergence(renormalized_distance);
 
-            println!("{}", self.hypercube);
-
-            println!(
-                ">>> Previous eval point: {:?}",
-                previous_best_eval.get_point()
-            );
-            println!(
-                ">>> Current eval point: {:?}",
-                current_best_eval.get_point()
-            );
-            println!(">>> Previous normalized: {:?}", previous_normalized);
-            println!(">>> Current normalized: {:?}", current_normalized);
-            println!(">>> Normalized distance: {}", normalized_distance);
-            println!(">>> Renormalized distance: {}", renormalized_distance);
             println!(">>> Convergence factor: {}\n", convergence_factor);
 
             // <----- hypercube displace ----->
@@ -193,9 +180,7 @@ impl HypercubeOptimizer {
             println!("attempting displacement to {:#?}", new_hypercube_center);
             self.hypercube.displace_to(&new_hypercube_center);
 
-            // <----- hypercube shrink ----->
-
-            self.hypercube.shrink(convergence_factor);
+            println!("new hypercube center is {:#?}", self.hypercube.get_center());
 
             previous_best_eval = current_best_eval;
 
