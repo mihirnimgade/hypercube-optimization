@@ -189,9 +189,15 @@ impl HypercubeOptimizer {
 
         println!("final hypercube size: {}\n", self.hypercube.diagonal_len());
 
-        let res = best_evaluations.peek().unwrap().clone();
+        let value = best_evaluations.peek();
 
-        res
+        match value {
+            None => {
+                println!("No best value found in internal binary tree");
+                None
+            }
+            Some(t) => Some(t.clone()),
+        }
     }
 
     fn calculate_convergence(renormalized_distance: f64) -> f64 {
