@@ -108,7 +108,11 @@ impl HypercubeOptimizer {
             // get best eval from current round of hypercube evaluations
             let current_best_eval = self.hypercube.peek_best_value().unwrap();
 
-            best_evaluations.push(current_best_eval.clone());
+            if current_best_eval > previous_best_eval {
+                best_evaluations.push(current_best_eval.clone());
+            } else {
+                best_evaluations.push(previous_best_eval.clone())
+            }
 
             // calculate new average
             average_f = average_f + ((current_best_eval.get_eval() - average_f) / ((i + 1) as f64));
