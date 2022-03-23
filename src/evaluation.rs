@@ -16,7 +16,7 @@ impl PointEval {
         Self { argument, image }
     }
 
-    pub fn new_with_eval(argument: Point, function: fn(&Point) -> f64) -> Self {
+    pub fn with_eval(argument: Point, function: fn(&Point) -> f64) -> Self {
         let image = function(&argument);
         let nn_image = NotNan::new(image);
 
@@ -98,7 +98,7 @@ mod tests {
     #[test]
     fn new_with_eval_1() {
         let test_point = point![0.0; 3];
-        let test_eval = PointEval::new_with_eval(test_point.clone(), rastrigin);
+        let test_eval = PointEval::with_eval(test_point.clone(), rastrigin);
 
         let expected_eval = PointEval {
             argument: test_point.clone(),
@@ -110,7 +110,7 @@ mod tests {
     #[should_panic]
     fn new_with_eval_2() {
         let test_point = point![0.0; 3];
-        let test_eval = PointEval::new_with_eval(test_point, nan_function);
+        let test_eval = PointEval::with_eval(test_point, nan_function);
     }
 
     #[test]
@@ -118,8 +118,8 @@ mod tests {
         let test_point_a = point![0.0; 3];
         let test_point_b = point![1.0; 3];
 
-        let test_eval_a = PointEval::new_with_eval(test_point_a, summation);
-        let test_eval_b = PointEval::new_with_eval(test_point_b, summation);
+        let test_eval_a = PointEval::with_eval(test_point_a, summation);
+        let test_eval_b = PointEval::with_eval(test_point_b, summation);
 
         assert_eq!(test_eval_a < test_eval_b, true);
         assert_eq!(test_eval_a <= test_eval_a, true);
@@ -130,8 +130,8 @@ mod tests {
         let test_point_a = point![0.0; 3];
         let test_point_b = point![1.0; 3];
 
-        let test_eval_a = PointEval::new_with_eval(test_point_a, summation);
-        let test_eval_b = PointEval::new_with_eval(test_point_b, summation);
+        let test_eval_a = PointEval::with_eval(test_point_a, summation);
+        let test_eval_b = PointEval::with_eval(test_point_b, summation);
 
         assert_eq!(test_eval_a > test_eval_b, false);
     }
@@ -139,7 +139,7 @@ mod tests {
     #[test]
     fn get_eval_1() {
         let test_point = point![1.0; 3];
-        let test_eval = PointEval::new_with_eval(test_point, summation);
+        let test_eval = PointEval::with_eval(test_point, summation);
 
         assert_eq!(test_eval.get_eval(), 3.0_f64);
     }
@@ -149,8 +149,8 @@ mod tests {
         let test_point_a = point![2.0; 3];
         let test_point_b = point![4.0; 3];
 
-        let test_eval_a = PointEval::new_with_eval(test_point_a, summation);
-        let test_eval_b = PointEval::new_with_eval(test_point_b, summation);
+        let test_eval_a = PointEval::with_eval(test_point_a, summation);
+        let test_eval_b = PointEval::with_eval(test_point_b, summation);
 
         assert_eq!(test_eval_b.clone().max(test_eval_a), test_eval_b);
     }
@@ -158,7 +158,7 @@ mod tests {
     #[test]
     fn eval_1() {
         let test_point = point![1.0; 3];
-        let mut test_eval = PointEval::new_with_eval(test_point, rastrigin);
+        let mut test_eval = PointEval::with_eval(test_point, rastrigin);
 
         test_eval.eval(summation);
 
@@ -169,7 +169,7 @@ mod tests {
     #[should_panic]
     fn eval_2() {
         let test_point = point![1.0; 3];
-        let mut test_eval = PointEval::new_with_eval(test_point, rastrigin);
+        let mut test_eval = PointEval::with_eval(test_point, rastrigin);
 
         test_eval.eval(nan_function);
     }
