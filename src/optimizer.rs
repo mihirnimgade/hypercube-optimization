@@ -65,8 +65,8 @@ impl HypercubeOptimizer {
         }
     }
 
-    pub fn maximize(&mut self) -> PointEval {
-        let init_eval = PointEval::new_with_eval(self.init_point.clone(), self.objective_function);
+    pub fn maximize(&mut self) -> Option<PointEval> {
+        let init_eval = PointEval::with_eval(self.init_point.clone(), self.objective_function);
 
         // should take max_eval into consideration and not evaluate the function more times than that
 
