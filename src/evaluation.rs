@@ -1,6 +1,7 @@
 use crate::point::Point;
 use ordered_float::NotNan;
 use std::cmp::Ordering;
+use std::fmt;
 
 /// Used to store the input and output to a specific vector function. Can be placed inside a binary
 /// heap and will be ordered by the image. This means PointEval instances with higher image values
@@ -70,6 +71,12 @@ impl Ord for PointEval {
     fn cmp(&self, other: &Self) -> Ordering {
         // compare only by image
         self.image.cmp(&other.image)
+    }
+}
+
+impl fmt::Display for PointEval {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:#?} => {}\n", self.argument, self.get_eval())
     }
 }
 
