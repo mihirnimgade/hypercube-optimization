@@ -76,7 +76,7 @@ impl Hypercube {
         // ordered_values
         for point in &self.population {
             // TODO: improve this so unnecessary cloning is removed
-            let new_eval = PointEval::new_with_eval(point.clone(), point_function);
+            let new_eval = PointEval::with_eval(point.clone(), point_function);
             self.values.push(new_eval.clone());
             self.ordered_values.push(new_eval);
         }
