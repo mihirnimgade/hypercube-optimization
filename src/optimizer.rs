@@ -25,7 +25,6 @@ pub struct HypercubeOptimizer {
 }
 
 impl HypercubeOptimizer {
-    // take optimization parameters here
     pub fn new(
         init_point: Point,
         lower_bound: f64,
@@ -106,7 +105,7 @@ impl HypercubeOptimizer {
 
             self.hypercube.evaluate(self.objective_function);
 
-            // get best eval
+            // get best eval from current round of hypercube evaluations
             let current_best_eval = self.hypercube.peek_best_value().unwrap();
 
             best_evaluations.push(current_best_eval.clone());
@@ -114,7 +113,7 @@ impl HypercubeOptimizer {
             // calculate new average
             average_f = average_f + ((current_best_eval.get_eval() - average_f) / ((i + 1) as f64));
 
-            // compare to previous eval
+            // if current best is worse than average best value skip hypercube displacement and shrink
             if current_best_eval.get_eval() < average_f || current_best_eval < previous_best_eval {
                 // if current best is worse than average best value skip hypercube displacement and shrink
                 println!("skipping displacement and reinitializing hypercube...\n");
