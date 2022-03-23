@@ -9,7 +9,6 @@ fn main() {
     let lower_bound = 0.0;
     let upper_bound = 120.0;
 
-    // create HypercubeOptimizer with certain parameters
     let mut optimizer = HypercubeOptimizer::new(
         initial_point,
         lower_bound,
@@ -25,10 +24,10 @@ fn main() {
 
     match result {
         None => {
-            println!("Unable to determine final result")
+            println!("unable to determine final result")
         }
         Some(t) => {
-            println!("Final result: {:?}", t);
+            println!("final result: {}", t);
         }
     }
 }

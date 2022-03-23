@@ -17,13 +17,12 @@ pub struct Point {
     coords: Box<[f64]>,
 }
 
-/* Trait implementations for mathematical operations */
+/* <----- Trait implementations for mathematical operations -----> */
 
 impl<'a, 'b> Add<&'b Point> for &'a Point {
     type Output = Point;
 
     fn add(self, other: &'b Point) -> Point {
-        // points need to have the same dimension to be added
         assert_eq!(
             self.dimension, other.dimension,
             "addition failed: operands do not have same dimension"
@@ -47,7 +46,6 @@ impl<'a, 'b> Sub<&'b Point> for &'a Point {
     type Output = Point;
 
     fn sub(self, other: &'b Point) -> Point {
-        // points need to have the same dimension to be subtracted
         assert_eq!(
             self.dimension, other.dimension,
             "subtraction failed: operands do not have same dimension"
@@ -71,7 +69,6 @@ impl<'a, 'b> Mul<&'b Point> for &'a Point {
     type Output = Point;
 
     fn mul(self, other: &'b Point) -> Point {
-        // points need to have the same dimension to be multiplied together
         assert_eq!(
             self.dimension, other.dimension,
             "element-wise multiplication failed: operands do not have same dimension"
@@ -95,7 +92,6 @@ impl<'a, 'b> Div<&'b Point> for &'a Point {
     type Output = Point;
 
     fn div(self, other: &'b Point) -> Point {
-        // points need to have the same dimension to be divided together
         assert_eq!(
             self.dimension, other.dimension,
             "element-wise division failed: operands do not have same dimension"
@@ -123,7 +119,7 @@ impl AddAssign for Point {
     }
 }
 
-/* Struct method implementations */
+/* <----- Struct method implementations -----> */
 
 impl Point {
     /// Creates a Point struct from a vector. Consumes vector in the process.
