@@ -189,11 +189,18 @@ impl Hypercube {
                 // clamp new_bounds to self.init_bounds
                 let clamped_bounds = new_bounds.clamp(&self.init_bounds);
 
-                // calculate how far the bounds moved when clamped
-                let old_bounds_to_clamped_bounds = clamped_bounds.get(&BoundType::LowerBound)
-                    - new_bounds.get(&BoundType::LowerBound);
+                // figure out the center of the clamped bounds
+                let clamped_center = clamped_bounds.compute_center();
 
-                self.raw_displace_to(&old_bounds_to_clamped_bounds);
+                // ARGUMENT: since the new bounds are clamped within the init_bounds,
+                // the center of the clamped bounds must be within the init_bounds
+
+                // ARGUMENT: raw displacing to the clamped center should mean that the hypercube's
+                // current bounds == clamped bounds since the size of the hypercube does not change
+                // during the execution of this function
+
+                // move the hypercube to clamped center
+                self.raw_displace_to(&clamped_center);
             }
         }
     }
