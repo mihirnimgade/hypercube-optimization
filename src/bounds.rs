@@ -199,10 +199,10 @@ impl HypercubeBounds {
     }
 
     fn clamp_lower(&self, limit: &HypercubeBounds) -> HypercubeBounds {
-        // calculate new upper bound by clamping to the limit bound
+        // calculate new lower bound by clamping to the limit bound
         let new_lower = self.lower.clamp(limit);
 
-        // figure out how far the new upper bound moved so that the lower bound is displaced
+        // figure out how far the new lower bound moved so that the upper bound is displaced
         // by the same distance
         let old_lower_to_new_lower = &new_lower - &self.lower;
 
