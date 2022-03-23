@@ -310,6 +310,24 @@ impl Hypercube {
     }
 }
 
+impl PartialEq for Hypercube {
+    fn eq(&self, other: &Self) -> bool {
+        let mut bool_vec = Vec::new();
+
+        bool_vec.push(self.dimension == other.dimension);
+        bool_vec.push(self.init_bounds == other.init_bounds);
+        bool_vec.push(self.current_bounds == other.current_bounds);
+        bool_vec.push(self.diagonal == other.diagonal);
+        bool_vec.push(self.center == other.center);
+        bool_vec.push(self.population_size == other.population_size);
+        bool_vec.push(self.population == other.population);
+
+        let equal = bool_vec.into_iter().fold(true, |acc, x| acc & x);
+
+        equal
+    }
+}
+
 impl fmt::Display for Hypercube {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
