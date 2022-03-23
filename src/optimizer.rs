@@ -95,12 +95,6 @@ impl HypercubeOptimizer {
 
         // start loop:
         for i in 0..self.max_eval {
-            println!("-------- loop {} of {} --------\n", i, self.max_eval);
-
-            // <----- hypercube randomize ----->
-
-            self.hypercube.randomize_pop();
-
             // <----- hypercube evaluation ----->
 
             self.hypercube.evaluate(self.objective_function);
@@ -119,8 +113,8 @@ impl HypercubeOptimizer {
 
             // if current best is worse than average best value skip hypercube displacement and shrink
             if current_best_eval.get_eval() < average_f || current_best_eval < previous_best_eval {
-                // if current best is worse than average best value skip hypercube displacement and shrink
-                println!("skipping displacement and reinitializing hypercube...\n");
+                // <----- hypercube randomize ----->
+                self.hypercube.randomize_pop();
                 continue;
             } else {
                 println!("current best eval: {:#?}", current_best_eval);
