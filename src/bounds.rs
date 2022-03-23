@@ -181,6 +181,10 @@ impl HypercubeBounds {
         }
     }
 
+    pub fn compute_center(&self) -> Point {
+        (&self.upper + &self.lower).scale(1.0 / 2.0)
+    }
+
     fn clamp_upper(&self, limit: &HypercubeBounds) -> HypercubeBounds {
         // calculate new upper bound by clamping to the limit bound
         let new_upper = self.upper.clamp(limit);
