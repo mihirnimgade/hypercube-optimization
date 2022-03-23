@@ -99,7 +99,7 @@ impl Hypercube {
     }
 
     /// Displaces the hypercube by adding the `vector` argument to the hypercube's center.
-    pub fn displace_by(&mut self, vector: &Point) -> Result<(), &'static str> {
+    pub fn try_displace_by(&mut self, vector: &Point) -> Result<(), &'static str> {
         // ensures the destination vector is the correct dimension
         assert_eq!(
             vector.dim() as u32,
@@ -156,7 +156,7 @@ impl Hypercube {
 
         let center_to_destination = destination - &self.center;
 
-        self.displace_by(&center_to_destination)
+        self.try_displace_by(&center_to_destination)
     }
 
     /// Displaces hypercube to any destination but makes sure hypercube stays within its
