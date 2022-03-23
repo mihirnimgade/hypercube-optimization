@@ -10,6 +10,7 @@ use ordered_float::NotNan;
 use crate::bounds::BoundType::LowerBound;
 use crate::bounds::BoundsOverlap;
 
+#[derive(Clone)]
 pub struct Hypercube {
     dimension: u32,
     init_bounds: HypercubeBounds,
