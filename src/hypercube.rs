@@ -182,7 +182,7 @@ impl Hypercube {
         // if new bounds are within the bounds that the hypercube was initialized with
         match new_bounds.within(&self.init_bounds) {
             BoundsOverlap::NoneOutOfBounds => {
-                self.raw_displace_to(&center_to_destination);
+                self.raw_displace_to(&destination);
             }
             _ => {
                 // clamp new_bounds to self.init_bounds
