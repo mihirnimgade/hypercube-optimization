@@ -175,6 +175,10 @@ impl HypercubeOptimizer {
 
             println!(">>> Convergence factor: {}\n", convergence_factor);
 
+            // <----- hypercube shrink ----->
+
+            self.hypercube.shrink(convergence_factor);
+
             // <----- hypercube displace ----->
 
             println!("attempting displacement to {:#?}", new_hypercube_center);
