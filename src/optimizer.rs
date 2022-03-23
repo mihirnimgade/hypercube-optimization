@@ -199,7 +199,7 @@ impl HypercubeOptimizer {
 
         match value {
             None => {
-                println!("No best value found in internal binary tree");
+                println!("no best value found in internal binary tree");
                 None
             }
             Some(t) => Some(t.clone()),
