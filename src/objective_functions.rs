@@ -19,6 +19,16 @@ pub fn neg_rastrigin(input_point: &Point) -> f64 {
     res * -1.0
 }
 
+pub fn sphere(input_point: &Point) -> f64 {
+    let res = input_point.iter().fold(0.0, |acc, x| acc + x.powf(2.0));
+    res
+}
+
+pub fn neg_sphere(input_point: &Point) -> f64 {
+    let res = sphere(&input_point);
+    res * -1.0
+}
+
 pub fn nan_function(input_point: &Point) -> f64 {
     f64::NAN
 }
