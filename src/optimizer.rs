@@ -23,10 +23,13 @@ pub struct HypercubeOptimizer {
     /// desired tolerance for the difference between consective function evaluations
     tol_f: f64,
 
+    /// maximum number of optimization loops allowed
+    max_loop: u32,
+
     /// maximum number of function evaluations allowed
     max_eval: u32,
 
-    /// maximum amount of time to optimize
+    /// maximum amount of time to optimize objective function
     max_timeout: u32,
 
     /// lower bound of the search space
@@ -50,8 +53,9 @@ impl HypercubeOptimizer {
     /// * `objective_function` - a function pointer to the function being optimized
     /// * `tol_x` - once the delta between consecutive best objective function inputs falls below this
     /// value, the optimization process will terminate
-    /// * `tol_y` - once the delta between consecutive best objective function outputs falls below
+    /// * `tol_f` - once the delta between consecutive best objective function outputs falls below
     /// this value, the optimization process will terminate
+    /// * `max_loop` - the maximum number of times the optimization loop is allowed to run
     /// * `max_eval` - the maximum number of objective function evaluations the optimizer will
     /// execute
     /// * `max_timeout` - the maximum amount of time for the optimization process to run for
@@ -63,6 +67,7 @@ impl HypercubeOptimizer {
         objective_function: fn(&Point) -> f64,
         tol_x: f64,
         tol_f: f64,
+        max_loop: u32,
         max_eval: u32,
         max_timeout: u32,
         ) -> Self {
@@ -88,6 +93,7 @@ impl HypercubeOptimizer {
             hypercube,
             tol_x,
             tol_f,
+            max_loop,
             max_eval,
             max_timeout,
             lower_bound,
@@ -122,7 +128,7 @@ impl HypercubeOptimizer {
         let mut previous_best_eval = init_eval;
 
         // start optimization loop
-        for i in 0..self.max_eval {
+        for i in 0..self.max_loop {
 
             // <----- hypercube randomize ----->
 
@@ -148,7 +154,7 @@ impl HypercubeOptimizer {
             if current_best_eval.get_eval() < average_f || current_best_eval < previous_best_eval {
                 continue;
             } else {
-                println!("-------- loop {} of {} --------\n", i, self.max_eval);
+                println!("-------- loop {} of {} --------\n", i, self.max_loop);
                 println!("current best eval: {}", current_best_eval);
                 println!("previous best eval: {}", previous_best_eval);
             }
