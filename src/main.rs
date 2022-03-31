@@ -15,8 +15,9 @@ fn main() {
         upper_bound,
         neg_rastrigin,
         0.01,
-        0.01,
-        4000,
+        0.1,
+        5000,
+        100_000,
         120,
     );
 
