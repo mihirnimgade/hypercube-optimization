@@ -1,13 +1,11 @@
 use std::collections::BinaryHeap;
 use std::fmt;
 
-use crate::bounds::{BoundType, HypercubeBounds};
+use crate::bounds::HypercubeBounds;
 use crate::evaluation::PointEval;
 use crate::point;
 use crate::point::Point;
-use ordered_float::NotNan;
 
-use crate::bounds::BoundType::LowerBound;
 use crate::bounds::BoundsOverlap;
 
 #[derive(Clone)]
@@ -357,6 +355,7 @@ impl fmt::Display for Hypercube {
 mod tests {
     use super::*;
     use crate::objective_functions::rastrigin;
+    use ordered_float::NotNan;
 
     #[test]
     fn new_hypercube_1() {
