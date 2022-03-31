@@ -2,7 +2,6 @@ use crate::evaluation::PointEval;
 use crate::hypercube::Hypercube;
 use crate::point::Point;
 use crate::result::HypercubeOptimizerResult;
-use ordered_float::NotNan;
 use std::collections::BinaryHeap;
 use std::f32::consts::E;
 
@@ -193,8 +192,8 @@ impl HypercubeOptimizer {
                 .scale(1.0 / self.hypercube.get_side_length());
 
             // compute normalized distance
-            let normalized_sqr_diff = (&(&current_normalized - &previous_normalized)
-                                       * &(&current_normalized - &previous_normalized));
+            let normalized_sqr_diff = &(&current_normalized - &previous_normalized)
+                                       * &(&current_normalized - &previous_normalized);
 
             let sum_normalized_sqr_diff = normalized_sqr_diff.sum();
 
