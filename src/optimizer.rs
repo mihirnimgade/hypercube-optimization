@@ -6,25 +6,56 @@ use ordered_float::NotNan;
 use std::collections::BinaryHeap;
 use std::f32::consts::E;
 
+/// Represents a hypercube optimizer
 pub struct HypercubeOptimizer {
     /// dimension of the optimization problem
     dimension: u32,
+
+    /// first point inside the search space to evaluate
     init_point: Point,
-    /// list of hypercubes created by the optimizer
+
+    /// hypercube used for optimization
     hypercube: Hypercube,
-    /// minimum acceptable tolerance for the difference between X inputs between iterations
+
+    /// desired tolerance for the difference between consecutive function inputs
     tol_x: f64,
+
+    /// desired tolerance for the difference between consective function evaluations
     tol_f: f64,
+
     /// maximum number of function evaluations allowed
     max_eval: u32,
-    /// maximum amount of time to spend optimizing
+
+    /// maximum amount of time to optimize
     max_timeout: u32,
+
+    /// lower bound of the search space
     lower_bound: f64,
+
+    /// upper bound of the search space
     upper_bound: f64,
+
+    /// the function to optimize for
     objective_function: fn(&Point) -> f64,
 }
 
 impl HypercubeOptimizer {
+    /// Returns a new `HypercubeOptimizer`
+    ///
+    /// # Arguments
+    ///
+    /// * `init_point` - the initial point inside the optimization search space to evaluate
+    /// * `lower_bound` - the lower bound of the initial hypercube that defines the search space
+    /// * `upper_bound` - the upper bound of the initial hypercube that defines the search space
+    /// * `objective_function` - a function pointer to the function being optimized
+    /// * `tol_x` - once the delta between consecutive best objective function inputs falls below this
+    /// value, the optimization process will terminate
+    /// * `tol_y` - once the delta between consecutive best objective function outputs falls below
+    /// this value, the optimization process will terminate
+    /// * `max_eval` - the maximum number of objective function evaluations the optimizer will
+    /// execute
+    /// * `max_timeout` - the maximum amount of time for the optimization process to run for
+    ///
     pub fn new(
         init_point: Point,
         lower_bound: f64,
@@ -34,19 +65,19 @@ impl HypercubeOptimizer {
         tol_f: f64,
         max_eval: u32,
         max_timeout: u32,
-    ) -> Self {
+        ) -> Self {
         assert!(
             upper_bound > lower_bound,
             "Upper bound not strictly larger than lower bound"
-        );
+            );
         assert!(
             init_point.max_val().unwrap() <= upper_bound,
             "init_point not inside upper bound"
-        );
+            );
         assert!(
             init_point.min_val().unwrap() >= lower_bound,
             "init_point not inside lower bound"
-        );
+            );
 
         // create initial hypercube based on initial bounds and place inside vector
         let hypercube = Hypercube::new(init_point.dim(), lower_bound, upper_bound);
@@ -68,11 +99,10 @@ impl HypercubeOptimizer {
     pub fn maximize(&mut self) -> Option<PointEval> {
         let init_eval = PointEval::with_eval(self.init_point.clone(), self.objective_function);
 
-        // should take max_eval into consideration and not evaluate the function more times than that
+        // TODO: compute no. of allowed hypercube evaluations from max_eval and number of points
+        // in hypercube
 
-        // TODO: compute no. of allowed hypercube evaluations from (max_eval and number of points in hypercube)
-
-        // keep running score of average image
+        // keep track of average image
         let mut average_f = init_eval.get_eval();
 
         let mut best_evaluations: BinaryHeap<PointEval> = BinaryHeap::new();
@@ -80,21 +110,20 @@ impl HypercubeOptimizer {
         // records absolute change in F to compare with tolF
         let mut abs_delta_f_vec = Vec::with_capacity(30);
 
-        // start optimization loop and measure time
-
         println!(
             "initial hypercube size: {}\n",
             self.hypercube.diagonal_len()
-        );
+            );
         println!(
             "initial hypercube population size: {}\n",
             self.hypercube.get_population_size()
-        );
+            );
 
         let mut previous_best_eval = init_eval;
 
-        // start loop:
+        // start optimization loop
         for i in 0..self.max_eval {
+
             // <----- hypercube randomize ----->
 
             self.hypercube.randomize_pop();
@@ -103,7 +132,7 @@ impl HypercubeOptimizer {
 
             self.hypercube.evaluate(self.objective_function);
 
-            // get best eval from current round of hypercube evaluations
+            // get best eval from current hypercube evaluation
             let current_best_eval = self.hypercube.peek_best_value().unwrap();
 
             if current_best_eval > previous_best_eval {
@@ -148,20 +177,18 @@ impl HypercubeOptimizer {
 
             // <----- hypercube shrink preparation ----->
 
-            // compute normalized values
-
-            // X_n
+            // compute X_n
             let previous_normalized = (&previous_best_eval.get_point()
-                - self.hypercube.get_center())
-            .scale(1.0 / self.hypercube.get_side_length());
+                                       - self.hypercube.get_center())
+                .scale(1.0 / self.hypercube.get_side_length());
 
-            // X_min_n
+            // compute X_min_n
             let current_normalized = (&current_best_eval.get_point() - self.hypercube.get_center())
                 .scale(1.0 / self.hypercube.get_side_length());
 
             // compute normalized distance
             let normalized_sqr_diff = (&(&current_normalized - &previous_normalized)
-                * &(&current_normalized - &previous_normalized));
+                                       * &(&current_normalized - &previous_normalized));
 
             let sum_normalized_sqr_diff = normalized_sqr_diff.sum();
 
@@ -206,6 +233,12 @@ impl HypercubeOptimizer {
         }
     }
 
+    /// Calculates the factor by which to shrink the hypercube during optimization
+    ///
+    /// # Arguments
+    ///
+    /// * `renormalized_distance` - the distance between the previous best and current best points
+    /// in the search space if they existed within a unit hypercube
     fn calculate_convergence(renormalized_distance: f64) -> f64 {
         let s = 1.0 - (0.2 * E.powf((-3.0 * renormalized_distance) as f32));
         s as f64
