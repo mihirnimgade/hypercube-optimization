@@ -5,19 +5,8 @@ use hypercube_optimizer::point::Point;
 
 use simple_logger::SimpleLogger;
 
-// extern crate pretty_env_logger;
-// #[macro_use] extern crate log;
-
 fn main() {
     SimpleLogger::new().with_level(log::LevelFilter::Info).init().unwrap();
-
-    // Log levels
-    //
-    // error! - Highest
-    // warn!
-    // info!
-    // debug!
-    // trace! - Lowest
 
     let dimension = 8;
     let initial_point = point![60.0; dimension];
