@@ -3,7 +3,22 @@ use hypercube_optimizer::optimizer::HypercubeOptimizer;
 use hypercube_optimizer::point;
 use hypercube_optimizer::point::Point;
 
+use simple_logger::SimpleLogger;
+
+// extern crate pretty_env_logger;
+// #[macro_use] extern crate log;
+
 fn main() {
+    SimpleLogger::new().with_level(log::LevelFilter::Info).init().unwrap();
+
+    // Log levels
+    //
+    // error! - Highest
+    // warn!
+    // info!
+    // debug!
+    // trace! - Lowest
+
     let dimension = 8;
     let initial_point = point![60.0; dimension];
     let lower_bound = 0.0;
@@ -16,8 +31,8 @@ fn main() {
         neg_rastrigin,
         0.01,
         0.1,
+        2000,
         5000,
-        100_000,
         120,
     );
 
@@ -25,10 +40,10 @@ fn main() {
 
     match result {
         None => {
-            println!("unable to determine final result")
+            log::error!("unable to determine final result")
         }
         Some(t) => {
-            println!("final result: {}", t);
+            log::info!("final result: {}", t);
         }
     }
 }
