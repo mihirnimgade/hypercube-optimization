@@ -58,7 +58,7 @@ impl Hypercube {
         Self {
             dimension,
             init_bounds: init_bounds.clone(),
-            current_bounds: init_bounds.clone(),
+            current_bounds: init_bounds,
             diagonal: hypercube_diagonal,
             center,
             population_size,
@@ -83,18 +83,13 @@ impl Hypercube {
 
     /// Peek at the maximum value evaluated by the hypercube
     pub fn peek_best_value(&self) -> Option<PointEval> {
-        match self.ordered_values.peek() {
-            Some(v) => Some(v.clone()),
-            None => None,
-        }
+        let best_value = self.ordered_values.peek();
+        best_value.map(|v| v.to_owned())
     }
 
     /// Pop the maximum value evaluated by the hypercube
     pub fn pop_best_value(&mut self) -> Option<PointEval> {
-        match self.ordered_values.pop() {
-            Some(v) => Some(v.clone()),
-            None => None,
-        }
+        self.ordered_values.pop()
     }
 
     /// Displaces the hypercube by adding the `vector` argument to the hypercube's center.
@@ -181,7 +176,7 @@ impl Hypercube {
         // if new bounds are within the bounds that the hypercube was initialized with
         match new_bounds.within(&self.init_bounds) {
             BoundsOverlap::NoneOutOfBounds => {
-                self.raw_displace_to(&destination);
+                self.raw_displace_to(destination);
             }
             _ => {
                 // clamp new_bounds to self.init_bounds
@@ -317,19 +312,17 @@ impl Hypercube {
 
 impl PartialEq for Hypercube {
     fn eq(&self, other: &Self) -> bool {
-        let mut bool_vec = Vec::new();
+        let bool_vec = vec![
+            self.dimension == other.dimension,
+            self.init_bounds == other.init_bounds,
+            self.current_bounds == other.current_bounds,
+            self.diagonal == other.diagonal,
+            self.center == other.center,
+            self.population_size == other.population_size,
+            self.population == other.population
+        ];
 
-        bool_vec.push(self.dimension == other.dimension);
-        bool_vec.push(self.init_bounds == other.init_bounds);
-        bool_vec.push(self.current_bounds == other.current_bounds);
-        bool_vec.push(self.diagonal == other.diagonal);
-        bool_vec.push(self.center == other.center);
-        bool_vec.push(self.population_size == other.population_size);
-        bool_vec.push(self.population == other.population);
-
-        let equal = bool_vec.into_iter().fold(true, |acc, x| acc & x);
-
-        equal
+        bool_vec.into_iter().fold(true, |acc, x| acc & x)
     }
 }
 
