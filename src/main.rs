@@ -17,7 +17,6 @@ fn main() {
         initial_point,
         lower_bound,
         upper_bound,
-        neg_rastrigin,
         0.01,
         0.1,
         2000,
@@ -25,7 +24,7 @@ fn main() {
         120,
     );
 
-    let result = optimizer.maximize();
+    let result = optimizer.maximize(neg_rastrigin);
 
     match result {
         None => {

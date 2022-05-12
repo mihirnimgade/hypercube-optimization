@@ -36,9 +36,6 @@ pub struct HypercubeOptimizer {
 
     /// upper bound of the search space
     upper_bound: f64,
-
-    /// the function to optimize for
-    objective_function: fn(&Point) -> f64,
 }
 
 impl HypercubeOptimizer {
@@ -49,7 +46,6 @@ impl HypercubeOptimizer {
     /// * `init_point` - the initial point inside the optimization search space to evaluate
     /// * `lower_bound` - the lower bound of the initial hypercube that defines the search space
     /// * `upper_bound` - the upper bound of the initial hypercube that defines the search space
-    /// * `objective_function` - a function pointer to the function being optimized
     /// * `tol_x` - once the delta between consecutive best objective function inputs falls below this
     /// value, the optimization process will terminate
     /// * `tol_f` - once the delta between consecutive best objective function outputs falls below
@@ -63,7 +59,6 @@ impl HypercubeOptimizer {
         init_point: Point,
         lower_bound: f64,
         upper_bound: f64,
-        objective_function: fn(&Point) -> f64,
         tol_x: f64,
         tol_f: f64,
         max_loop: u32,
@@ -97,12 +92,13 @@ impl HypercubeOptimizer {
             max_timeout,
             lower_bound,
             upper_bound,
-            objective_function,
         }
     }
 
-    pub fn maximize(&mut self) -> Option<PointEval> {
-        let init_eval = PointEval::with_eval(self.init_point.clone(), self.objective_function);
+    pub fn maximize<F>(&mut self, obj_function: F) -> Option<PointEval> 
+        where F: Fn(&Point) -> f64
+    {
+        let init_eval = PointEval::with_eval(self.init_point.clone(), &obj_function);
 
         // TODO: compute no. of allowed hypercube evaluations from max_eval and number of points
         // in hypercube
@@ -135,7 +131,7 @@ impl HypercubeOptimizer {
 
             // <----- hypercube evaluation ----->
 
-            self.hypercube.evaluate(self.objective_function);
+            self.hypercube.evaluate(&obj_function);
 
             // get best eval from current hypercube evaluation
             let current_best_eval = self.hypercube.peek_best_value().unwrap();

@@ -17,7 +17,7 @@ impl PointEval {
         Self { argument, image }
     }
 
-    pub fn with_eval(argument: Point, function: fn(&Point) -> f64) -> Self {
+    pub fn with_eval(argument: Point, function: impl Fn(&Point) -> f64) -> Self {
         let image = function(&argument);
         let nn_image = NotNan::new(image);
 
