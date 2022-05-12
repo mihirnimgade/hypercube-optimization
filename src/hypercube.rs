@@ -70,12 +70,12 @@ impl Hypercube {
 
     /// Applies the vector function to all points in the population and stores it in the hypercube
     /// struct.
-    pub fn evaluate(&mut self, point_function: fn(&Point) -> f64) {
+    pub fn evaluate(&mut self, point_function: impl Fn(&Point) -> f64) {
         // iterate over population points, apply vector function, and store result in values and
         // ordered_values
         for point in &self.population {
             // TODO: improve this so unnecessary cloning is removed
-            let new_eval = PointEval::with_eval(point.clone(), point_function);
+            let new_eval = PointEval::with_eval(point.clone(), &point_function);
             self.values.push(new_eval.clone());
             self.ordered_values.push(new_eval);
         }
