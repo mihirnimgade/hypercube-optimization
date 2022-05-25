@@ -69,22 +69,19 @@ impl<'a, 'b> Mul<&'b Point> for &'a Point {
     type Output = Point;
 
     fn mul(self, other: &'b Point) -> Point {
-        assert_eq!(
-            self.dimension, other.dimension,
-            "element-wise multiplication failed: operands do not have same dimension"
-        );
-        assert_ne!(
-            self.dimension, 0,
-            "element-wise multiplication failed: point dimension cannot be zero"
-        );
+        let point_one_iter = self.coords.into_par_iter();
+        let point_two_iter = other.coords.into_par_iter();
 
-        let mut mul_result = Vec::new();
+        // ensures the point structs are the same size
+        let zip_result = point_one_iter.zip_eq(point_two_iter);
 
-        for (index, element) in self.coords.iter().enumerate() {
-            mul_result.push(element * other.get(index).unwrap());
-        }
+        let map_result = zip_result.into_par_iter().map(
+            |tup| tup.0 * tup.1
+            );
 
-        Point::from_vec(mul_result)
+        let final_result: Vec<f64> = map_result.collect();
+
+        Point::from_vec(final_result)
     }
 }
 
