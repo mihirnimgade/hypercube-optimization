@@ -89,22 +89,19 @@ impl<'a, 'b> Div<&'b Point> for &'a Point {
     type Output = Point;
 
     fn div(self, other: &'b Point) -> Point {
-        assert_eq!(
-            self.dimension, other.dimension,
-            "element-wise division failed: operands do not have same dimension"
-        );
-        assert_ne!(
-            self.dimension, 0,
-            "element-wise division failed: point dimension cannot be zero"
-        );
+        let point_one_iter = self.coords.into_par_iter();
+        let point_two_iter = other.coords.into_par_iter();
 
-        let mut div_result = Vec::new();
+        // ensures the point structs are the same size
+        let zip_result = point_one_iter.zip_eq(point_two_iter);
 
-        for (index, element) in self.coords.iter().enumerate() {
-            div_result.push(element / other.get(index).unwrap());
-        }
+        let map_result = zip_result.into_par_iter().map(
+            |tup| tup.0 / tup.1
+            );
 
-        Point::from_vec(div_result)
+        let final_result: Vec<f64> = map_result.collect();
+
+        Point::from_vec(final_result)
     }
 }
 
