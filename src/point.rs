@@ -7,6 +7,8 @@ use rand::{thread_rng, Rng};
 use crate::bounds::HypercubeBounds;
 use std::slice::Iter;
 
+use rayon::prelude::*;
+
 /// Defines a point data structure used to represent mathematical vectors that can be elementwise
 /// added, subtracted, multiplied, and divided. Once a point is created, it has a defined and
 /// unchangeable dimension which corresponds to the length of the ordered tuple the point
@@ -23,22 +25,23 @@ impl<'a, 'b> Add<&'b Point> for &'a Point {
     type Output = Point;
 
     fn add(self, other: &'b Point) -> Point {
-        assert_eq!(
-            self.dimension, other.dimension,
-            "addition failed: operands do not have same dimension"
-        );
-        assert_ne!(
-            self.dimension, 0,
-            "addition failed: point dimension cannot be zero"
-        );
 
-        let mut add_result = Vec::new();
+        // step 1: parallel zip both iterators
+        // step 2: parallel map over single zipped iterator
 
-        for (index, element) in self.coords.iter().enumerate() {
-            add_result.push(element + other.get(index).unwrap());
-        }
+        let point_one_iter = self.coords.into_par_iter();
+        let point_two_iter = other.coords.into_par_iter();
 
-        Point::from_vec(add_result)
+        // ensures the point structs are the same size
+        let zip_result = point_one_iter.zip_eq(point_two_iter);
+
+        let map_result = zip_result.into_par_iter().map(
+            |tup| tup.0 + tup.1
+            );
+
+        let final_result: Vec<f64> = map_result.collect();
+
+        Point::from_vec(final_result)
     }
 }
 
