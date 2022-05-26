@@ -142,6 +142,22 @@ impl HypercubeOptimizer {
                 best_evaluations.push(previous_best_eval.clone())
             }
 
+            // calculate difference between previous best and current best
+            let abs_delta_f = (current_best_eval.get_eval() - previous_best_eval.get_eval()).abs();
+
+            if abs_delta_f <= self.tol_f {
+                abs_delta_f_vec.push(abs_delta_f);
+
+                // if the delta_f is within the tolerance consecutively more than 30 times, break
+                // optimization loop
+                if abs_delta_f_vec.len() >= 30 {
+                    log::warn!("optimization process terminated due to image convergence");
+                    break;
+                }
+            } else {
+                abs_delta_f_vec.clear();
+            }
+
             // calculate new average
             average_f = average_f + ((current_best_eval.get_eval() - average_f) / ((i + 1) as f64));
 
@@ -152,22 +168,6 @@ impl HypercubeOptimizer {
                 log::info!("--------------- loop {} of {} ---------------", i, self.max_loop);
                 log::info!("current best eval: {}", current_best_eval);
                 log::info!("previous best eval: {}", previous_best_eval);
-            }
-
-            // calculate difference between previous best and current best
-            let abs_delta_f = (current_best_eval.get_eval() - previous_best_eval.get_eval()).abs();
-
-            if abs_delta_f <= self.tol_f {
-                abs_delta_f_vec.push(abs_delta_f);
-
-                // if the delta_f is within the tolerance consecutively more than 30 times, break
-                // optimization loop
-                if abs_delta_f_vec.len() >= 30 {
-                    log::info!("optimization process terminated due to image convergence");
-                    break;
-                } else {
-                    abs_delta_f_vec.clear();
-                }
             }
 
             // <----- hypercube displace preparation ----->
