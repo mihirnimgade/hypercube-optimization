@@ -16,7 +16,7 @@ use rayon::prelude::*;
 #[derive(Debug, PartialEq, Clone)]
 pub struct Point {
     dimension: u32,
-    coords: Box<[f64]>,
+    coords: Vec<f64>,
 }
 
 /* <----- Trait implementations for mathematical operations -----> */
@@ -25,19 +25,16 @@ impl<'a, 'b> Add<&'b Point> for &'a Point {
     type Output = Point;
 
     fn add(self, other: &'b Point) -> Point {
-
         // step 1: parallel zip both iterators
         // step 2: parallel map over single zipped iterator
 
-        let point_one_iter = self.coords.into_par_iter();
-        let point_two_iter = other.coords.into_par_iter();
+        let point_one_iter = self.coords.par_iter();
+        let point_two_iter = other.coords.par_iter();
 
         // ensures the point structs are the same size
         let zip_result = point_one_iter.zip_eq(point_two_iter);
 
-        let map_result = zip_result.into_par_iter().map(
-            |tup| tup.0 + tup.1
-            );
+        let map_result = zip_result.into_par_iter().map(|tup| tup.0 + tup.1);
 
         let final_result: Vec<f64> = map_result.collect();
 
@@ -49,15 +46,13 @@ impl<'a, 'b> Sub<&'b Point> for &'a Point {
     type Output = Point;
 
     fn sub(self, other: &'b Point) -> Point {
-        let point_one_iter = self.coords.into_par_iter();
-        let point_two_iter = other.coords.into_par_iter();
+        let point_one_iter = self.coords.par_iter();
+        let point_two_iter = other.coords.par_iter();
 
         // ensures the point structs are the same size
         let zip_result = point_one_iter.zip_eq(point_two_iter);
 
-        let map_result = zip_result.into_par_iter().map(
-            |tup| tup.0 - tup.1
-            );
+        let map_result = zip_result.into_par_iter().map(|tup| tup.0 - tup.1);
 
         let final_result: Vec<f64> = map_result.collect();
 
@@ -69,15 +64,13 @@ impl<'a, 'b> Mul<&'b Point> for &'a Point {
     type Output = Point;
 
     fn mul(self, other: &'b Point) -> Point {
-        let point_one_iter = self.coords.into_par_iter();
-        let point_two_iter = other.coords.into_par_iter();
+        let point_one_iter = self.coords.par_iter();
+        let point_two_iter = other.coords.par_iter();
 
         // ensures the point structs are the same size
         let zip_result = point_one_iter.zip_eq(point_two_iter);
 
-        let map_result = zip_result.into_par_iter().map(
-            |tup| tup.0 * tup.1
-            );
+        let map_result = zip_result.into_par_iter().map(|tup| tup.0 * tup.1);
 
         let final_result: Vec<f64> = map_result.collect();
 
@@ -89,17 +82,16 @@ impl<'a, 'b> Div<&'b Point> for &'a Point {
     type Output = Point;
 
     fn div(self, other: &'b Point) -> Point {
-        let point_one_iter = self.coords.into_par_iter();
-        let point_two_iter = other.coords.into_par_iter();
+        let point_one_iter = self.coords.par_iter();
+        let point_two_iter = other.coords.par_iter();
 
         // ensures the point structs are the same size
         let zip_result = point_one_iter.zip_eq(point_two_iter);
 
-        let map_result = zip_result.into_par_iter().map(
-            |tup| tup.0 / tup.1
-            );
+        let map_result = zip_result.into_par_iter().map(|tup| tup.0 / tup.1);
 
         let final_result: Vec<f64> = map_result.collect();
+
 
         Point::from_vec(final_result)
     }
@@ -120,12 +112,9 @@ impl Point {
     pub fn from_vec(vector: Vec<f64>) -> Self {
         assert_ne!(vector.len(), 0, "vector dimension cannot be zero");
 
-        let coords: Vec<f64> = vector;
-        let box_coords = coords.into_boxed_slice();
-
         Self {
-            dimension: box_coords.len() as u32,
-            coords: box_coords,
+            dimension: vector.len() as u32,
+            coords: vector,
         }
     }
 
@@ -134,11 +123,10 @@ impl Point {
         assert_ne!(n, 0, "vector dimension cannot be zero");
 
         let coords = vec![element; n as usize];
-        let box_coords = coords.into_boxed_slice();
 
         Self {
             dimension: n,
-            coords: box_coords,
+            coords,
         }
     }
 
@@ -285,7 +273,7 @@ mod tests {
         let a = Point::fill(4.3, 10);
         let b = Point {
             dimension: 10,
-            coords: vec![4.3; 10].into_boxed_slice(),
+            coords: vec![4.3; 10],
         };
 
         assert_eq!(a, b);
@@ -302,7 +290,7 @@ mod tests {
         let a = Point::from_vec(vec![5.2, 4.5, 3.2]);
         let b = Point {
             dimension: 3,
-            coords: vec![5.2, 4.5, 3.2].into_boxed_slice(),
+            coords: vec![5.2, 4.5, 3.2],
         };
 
         assert_eq!(a, b);
