@@ -64,19 +64,19 @@ impl HypercubeOptimizer {
         max_loop: u32,
         max_eval: u32,
         max_timeout: u32,
-        ) -> Self {
+    ) -> Self {
         assert!(
             upper_bound > lower_bound,
             "Upper bound not strictly larger than lower bound"
-            );
+        );
         assert!(
             init_point.max_val().unwrap() <= upper_bound,
             "init_point not inside upper bound"
-            );
+        );
         assert!(
             init_point.min_val().unwrap() >= lower_bound,
             "init_point not inside lower bound"
-            );
+        );
 
         // create initial hypercube based on initial bounds and place inside vector
         let hypercube = Hypercube::new(init_point.dim(), lower_bound, upper_bound);
@@ -95,9 +95,14 @@ impl HypercubeOptimizer {
         }
     }
 
-    pub fn maximize<F>(&mut self, obj_function: F) -> Option<PointEval> 
-        where F: Fn(&Point) -> f64
+    pub fn maximize<F>(&mut self, obj_function: F) -> HypercubeOptimizerResult
+    where
+        F: Fn(&Point) -> f64,
     {
+        // <----- Optimization result set-up ----->
+
+        let fn_eval = 0;
+
         let init_eval = PointEval::with_eval(self.init_point.clone(), &obj_function);
 
         // TODO: compute no. of allowed hypercube evaluations from max_eval and number of points
@@ -111,20 +116,16 @@ impl HypercubeOptimizer {
         // records absolute change in F to compare with tolF
         let mut abs_delta_f_vec = Vec::with_capacity(30);
 
-        log::info!(
-            "initial hypercube size: {}",
-            self.hypercube.diagonal_len()
-            );
+        log::info!("initial hypercube size: {}", self.hypercube.diagonal_len());
         log::info!(
             "initial hypercube population size: {}",
             self.hypercube.get_population_size()
-            );
+        );
 
         let mut previous_best_eval = init_eval;
 
         // start optimization loop
         for i in 0..self.max_loop {
-
             // <----- hypercube randomize ----->
 
             self.hypercube.randomize_pop();
@@ -152,7 +153,9 @@ impl HypercubeOptimizer {
                 // optimization loop
                 if abs_delta_f_vec.len() >= 30 {
                     log::warn!("optimization process terminated due to image convergence");
-                    break;
+                    let best_value: Option<&PointEval> = best_evaluations.peek();
+
+                    return HypercubeOptimizerResult::new(0, i, fn_eval, best_value);
                 }
             } else {
                 abs_delta_f_vec.clear();
@@ -165,7 +168,11 @@ impl HypercubeOptimizer {
             if current_best_eval.get_eval() < average_f || current_best_eval < previous_best_eval {
                 continue;
             } else {
-                log::info!("--------------- loop {} of {} ---------------", i, self.max_loop);
+                log::info!(
+                    "--------------- loop {} of {} ---------------",
+                    i,
+                    self.max_loop
+                );
                 log::info!("current best eval: {}", current_best_eval);
                 log::info!("previous best eval: {}", previous_best_eval);
             }
@@ -180,8 +187,8 @@ impl HypercubeOptimizer {
 
             // compute X_n
             let previous_normalized = (&previous_best_eval.get_point()
-                                       - self.hypercube.get_center())
-                .scale(1.0 / self.hypercube.get_side_length());
+                - self.hypercube.get_center())
+            .scale(1.0 / self.hypercube.get_side_length());
 
             // compute X_min_n
             let current_normalized = (&current_best_eval.get_point() - self.hypercube.get_center())
@@ -189,7 +196,7 @@ impl HypercubeOptimizer {
 
             // compute normalized distance
             let normalized_sqr_diff = &(&current_normalized - &previous_normalized)
-                                       * &(&current_normalized - &previous_normalized);
+                * &(&current_normalized - &previous_normalized);
 
             let sum_normalized_sqr_diff = normalized_sqr_diff.sum();
 
@@ -206,14 +213,18 @@ impl HypercubeOptimizer {
             log::info!("hypercube convergence factor: {}", convergence_factor);
 
             // <----- hypercube shrink ----->
-            
+
             let pre_shrink_size = self.hypercube.diagonal_len();
 
             self.hypercube.shrink(convergence_factor);
 
             let post_shrink_size = self.hypercube.diagonal_len();
 
-            log::info!("shrunk hypercube from {} => {}", pre_shrink_size, post_shrink_size);
+            log::info!(
+                "shrunk hypercube from {} => {}",
+                pre_shrink_size,
+                post_shrink_size
+            );
 
             // <----- hypercube displace ----->
 
@@ -229,15 +240,9 @@ impl HypercubeOptimizer {
 
         log::info!("final hypercube size: {}", self.hypercube.diagonal_len());
 
-        let value = best_evaluations.peek();
+        let best_value: Option<&PointEval> = best_evaluations.peek();
 
-        match value {
-            None => {
-                log::warn!("no best value found in internal binary tree");
-                None
-            }
-            Some(t) => Some(t.clone()),
-        }
+        HypercubeOptimizerResult::new(0, self.max_loop, fn_eval, best_value)
     }
 
     /// Calculates the factor by which to shrink the hypercube during optimization

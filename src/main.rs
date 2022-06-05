@@ -1,8 +1,9 @@
-use hypercube_optimizer::objective_functions::{neg_rastrigin, rastrigin};
+use hypercube_optimizer::objective_functions::neg_rastrigin;
 use hypercube_optimizer::optimizer::HypercubeOptimizer;
 use hypercube_optimizer::point;
 use hypercube_optimizer::point::Point;
 
+use hypercube_optimizer::result::HypercubeOptimizerResult;
 use simple_logger::SimpleLogger;
 
 fn main() {
@@ -24,14 +25,6 @@ fn main() {
         120,
     );
 
-    let result = optimizer.maximize(neg_rastrigin);
-
-    match result {
-        None => {
-            log::error!("unable to determine final result")
-        }
-        Some(t) => {
-            log::info!("final result: {}", t);
-        }
-    }
+    let result: HypercubeOptimizerResult = optimizer.maximize(neg_rastrigin);
+    log::info!("final result: {:#?}", result);
 }
