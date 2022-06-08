@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::{point::Point, evaluation::PointEval};
 
 /// Exit codes:
@@ -16,6 +18,7 @@ pub struct HypercubeOptimizerResult {
     fn_evals: u32,
     best_x: Option<Point>,
     best_f: Option<f64>,
+    time_elapsed: Duration,
 }
 
 impl HypercubeOptimizerResult {
@@ -24,6 +27,7 @@ impl HypercubeOptimizerResult {
         loops: u32,
         fn_evals: u32,
         best_value: Option<&PointEval>,
+        time_elapsed: Duration,
     ) -> Self {
         // map exit code to message
         let message = Self::map_to_message(exit_code);
@@ -40,6 +44,7 @@ impl HypercubeOptimizerResult {
             fn_evals,
             best_x,
             best_f,
+            time_elapsed,
         }
     }
 
