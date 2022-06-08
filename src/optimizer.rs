@@ -4,6 +4,7 @@ use crate::point::Point;
 use crate::result::HypercubeOptimizerResult;
 use std::collections::BinaryHeap;
 use std::f32::consts::E;
+use std::time::Instant;
 
 /// Represents a hypercube optimizer
 pub struct HypercubeOptimizer {
@@ -101,6 +102,8 @@ impl HypercubeOptimizer {
     {
         // <----- Optimization result set-up ----->
 
+        let start_time = Instant::now();
+
         let fn_eval = 0;
 
         let init_eval = PointEval::with_eval(self.init_point.clone(), &obj_function);
@@ -155,7 +158,9 @@ impl HypercubeOptimizer {
                     log::warn!("optimization process terminated due to image convergence");
                     let best_value: Option<&PointEval> = best_evaluations.peek();
 
-                    return HypercubeOptimizerResult::new(0, i, fn_eval, best_value);
+                    let time_elapsed = start_time.elapsed();
+
+                    return HypercubeOptimizerResult::new(0, i, fn_eval, best_value, time_elapsed);
                 }
             } else {
                 abs_delta_f_vec.clear();
@@ -241,8 +246,9 @@ impl HypercubeOptimizer {
         log::info!("final hypercube size: {}", self.hypercube.diagonal_len());
 
         let best_value: Option<&PointEval> = best_evaluations.peek();
+        let time_elapsed  = start_time.elapsed();
 
-        HypercubeOptimizerResult::new(0, self.max_loop, fn_eval, best_value)
+        HypercubeOptimizerResult::new(0, self.max_loop, fn_eval, best_value, time_elapsed)
     }
 
     /// Calculates the factor by which to shrink the hypercube during optimization
