@@ -1,8 +1,8 @@
 # Hypercube Optimization
 
-## Project overview
+## Overview
 
-This is a Rust implementation of a multi-dimensional hypercube-based optimization algorithm based on "Optimization of High-Dimensional Functions through Hypercube Evaluation" (https://www.hindawi.com/journals/cin/2015/967320/).
+This is a Rust implementation of a multi-dimensional hypercube-based optimization algorithm based on _"Optimization of High-Dimensional Functions through Hypercube Evaluation"_ (https://www.hindawi.com/journals/cin/2015/967320/).
 
 ## Installation
 
@@ -14,7 +14,7 @@ hypercube-optimization = { git = "https://github.com/mihirnimgade/hypercube-opti
 
 Cargo should then automatically download and compile the package next time you build your source code.
 
-## Example usage
+## Usage
 
 ```Rust
 use hypercube_optimizer::objective_functions::neg_rastrigin;
@@ -49,13 +49,32 @@ fn main() {
 If you would like to ensure the `hypercube-optimization` package is running correctly, you can run the included unit and integration tests with:
 
 ```shell
-$ cargo test -p hypercube-optimization
+cargo test -p hypercube-optimization
 ```
 
 ## Algorithm outline
 
+TODO: finish section
+
 ## Benchmarks
+
+TODO: add benchmarks for following objective functions
+
+- Rastrigin function
+- Sphere function
+- Rosenbrock function
+- Ackley function
+- Griewank function
 
 ## Current features
 
+- Global optimization over arbitrary n-dimensional search space for arbitrary Rust vector function
+- Built-in time measurement for optimization process
+
 ## Planned features
+
+- Multithreading in optimizer core
+- Python frontend that calls Rust backend using PyO3
+- Expanded optimization parameter customization
+- Customization for maximum optimization runtime and function evaluations
+- Built-in logging system
