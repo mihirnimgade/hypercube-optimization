@@ -6,6 +6,14 @@ This is a Rust implementation of a multi-dimensional hypercube-based optimizatio
 
 ## Installation
 
+Simply add the following line to your `Cargo.toml` file as a dependency:
+
+```toml
+hypercube-optimization = { git = "https://github.com/mihirnimgade/hypercube-optimization" }
+```
+
+Cargo should then automatically download and compile the package next time you build your source code.
+
 ## Example usage
 
 ```Rust
@@ -37,6 +45,10 @@ fn main() {
 ```
 
 ## Running the tests
+
+```
+cargo test -p hypercube-optimization
+```
 
 ## Algorithm outline
 
