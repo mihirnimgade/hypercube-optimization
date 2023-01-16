@@ -46,8 +46,10 @@ fn main() {
 
 ## Running the tests
 
-```
-cargo test -p hypercube-optimization
+If you would like to ensure the `hypercube-optimization` package is running correctly, you can run the included unit and integration tests with:
+
+```shell
+$ cargo test -p hypercube-optimization
 ```
 
 ## Algorithm outline
