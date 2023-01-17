@@ -2,7 +2,9 @@
 
 ## Overview
 
-This is a Rust implementation of a multi-dimensional hypercube-based optimization algorithm based on _"Optimization of High-Dimensional Functions through Hypercube Evaluation"_ (https://www.hindawi.com/journals/cin/2015/967320/).
+The hypercube optimization algorithm is designed to globally optimize vector functions where problem dimensionality is particularly high (n ~= 10,000). 
+
+This implementation is based on _"Optimization of High-Dimensional Functions through Hypercube Evaluation"_ (https://www.hindawi.com/journals/cin/2015/967320/).
 
 ## Installation
 
