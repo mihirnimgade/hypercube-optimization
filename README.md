@@ -33,7 +33,7 @@ Depending on the location of the current best point and the previous one, the hy
 
 A high-level flowchart is shown below:
 
-TODO: add flowchart
+![flowchart](/images/hypercube-flowchart.png)
 
 ## Installation
 
