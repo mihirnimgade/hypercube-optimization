@@ -2,7 +2,7 @@
 
 ## Overview
 
-The hypercube optimization algorithm is designed to globally optimize vector functions where problem dimensionality is particularly high (n ~= 10,000). 
+The hypercube optimization algorithm is designed to globally optimize vector functions where problem dimensionality is particularly high. 
 
 This implementation is based on _"Optimization of High-Dimensional Functions through Hypercube Evaluation"_ (https://www.hindawi.com/journals/cin/2015/967320/).
 
