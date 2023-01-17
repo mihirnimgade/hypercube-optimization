@@ -1,5 +1,7 @@
 # Hypercube Optimization
 
+Welcome to the Github repository for the `hypercube-optimization` Rust package!
+
 ## Overview
 
 The hypercube optimization algorithm is designed to globally optimize vector functions where the problem dimensionality is particularly high. In more mathematical terms, these vector functions have the following specification:
@@ -24,7 +26,7 @@ TODO: add flowchart
 
 ## Installation
 
-Simply add the following line to your `Cargo.toml` file as a dependency:
+To use the package, simply add the following line to your `Cargo.toml` file as a dependency:
 
 ```toml
 hypercube-optimization = { git = "https://github.com/mihirnimgade/hypercube-optimization" }
@@ -72,7 +74,7 @@ cargo test -p hypercube-optimization
 
 ## Benchmarks
 
-TODO: add benchmarks for following objective functions
+// TODO: add benchmarks for following objective functions
 
 - Rastrigin function
 - Sphere function
