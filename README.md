@@ -2,6 +2,17 @@
 
 Welcome to the Github repository for the `hypercube-optimization` Rust package!
 
+## Table of contents
+
+- [Overview](#overview)
+- [Algorithm outline](#algorithm-outline)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Running the tests](#running-the-tests)
+- [Benchmarks](#benchmarks)
+- [Current features](#current-features)
+- [Planned features](#planned-features)
+
 ## Overview
 
 The hypercube optimization algorithm is designed to globally optimize vector functions where the problem dimensionality is particularly high. In more mathematical terms, these vector functions have the following specification:
