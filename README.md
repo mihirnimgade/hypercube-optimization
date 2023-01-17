@@ -2,11 +2,19 @@
 
 ## Overview
 
-The hypercube optimization algorithm is designed to globally optimize vector functions where the problem dimensionality is particularly high. In more precise terms, these vector functions can be specified as:
+The hypercube optimization algorithm is designed to globally optimize vector functions where the problem dimensionality is particularly high. In more mathematical terms, these vector functions have the following specification:
 
-$$f: S \rightarrow \mathbb{R} \subseteq \mathbb{R}^{n}$$
+$$f: S \rightarrow \mathbb{R}, S \subseteq \mathbb{R}^{n}, n \in \mathbb{Z}^{+}$$
+
+In the above notation, $f$ is the objective function, $S$ is the search space, and $n$ is the dimensionality of the problem. The goal of the hypercube optimization algorithm (or really any global optimization algorithm) is to find some $s \in S$ such that $f(s)$ is "optimum" for whatever definition of optimum (usually either maximum or minimum).
+
+It is important to note that this algorithm knows nothing about the internals of how the function is calculated nor does it need any gradient information about the function (e.g., Jacobian, Hessian). Rather, the algorithm treats the objective function as a black box.
 
 This implementation is based on _"Optimization of High-Dimensional Functions through Hypercube Evaluation"_ (https://www.hindawi.com/journals/cin/2015/967320/).
+
+## Algorithm outline
+
+
 
 ## Installation
 
@@ -55,10 +63,6 @@ If you would like to ensure the `hypercube-optimization` package is running corr
 ```shell
 cargo test -p hypercube-optimization
 ```
-
-## Algorithm outline
-
-TODO: finish section
 
 ## Benchmarks
 
