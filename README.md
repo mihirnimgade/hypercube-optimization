@@ -85,7 +85,7 @@ cargo test -p hypercube-optimization
 
 ## Benchmarks
 
-// TODO: add benchmarks for following objective functions
+// TODO: add benchmarks for following objective functions:
 
 - Rastrigin function
 - Sphere function
