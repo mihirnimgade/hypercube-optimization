@@ -6,15 +6,21 @@ The hypercube optimization algorithm is designed to globally optimize vector fun
 
 $$f: S \rightarrow \mathbb{R}, S \subseteq \mathbb{R}^{n}, n \in \mathbb{Z}^{+}$$
 
-In the above notation, $f$ is the objective function, $S$ is the search space, and $n$ is the dimensionality of the problem. The goal of the hypercube optimization algorithm (or really any global optimization algorithm) is to find some $s \in S$ such that $f(s)$ is "optimum" for whatever definition of optimum (usually either maximum or minimum).
+In the above notation, $f$ is the objective function, $S$ is the search space, and $n$ is the dimensionality of the problem. Ideally, the goal of the hypercube optimization algorithm (or really any global optimization algorithm) is to find some $s \in S$ such that $f(s)$ is "optimum" for whatever definition of optimum (usually either maximum or minimum).
 
-It is important to note that this algorithm knows nothing about the internals of how the function is calculated nor does it need any gradient information about the function (e.g., Jacobian, Hessian). Rather, the algorithm treats the objective function as a black box.
-
-This implementation is based on _"Optimization of High-Dimensional Functions through Hypercube Evaluation"_ (https://www.hindawi.com/journals/cin/2015/967320/).
+It is important to note that this algorithm knows nothing about the internals of how the function is calculated nor does it need **any gradient information** about the function (e.g., Jacobian, Hessian). Rather, the algorithm treats the objective function as a **black box**.
 
 ## Algorithm outline
 
+This implementation is based on _"Optimization of High-Dimensional Functions through Hypercube Evaluation"_ by Rahib H. Abiyev and Mustafa Tunay (https://www.hindawi.com/journals/cin/2015/967320/).
 
+The algorithm's basic process involves initializing an n-dimensional cube (hypercube) that is the size of your search space and randomly generating a population of points that reside within the hypercube. This population represents inputs to the objective function. The population is evaluated using the objective function and the current "best" point is acquired. 
+
+Depending on the location of the current best point and the previous one, the hypercube displaces and shrinks in space to focus in on the global optimum.
+
+A high-level flowchart is shown below:
+
+TODO: add flowchart
 
 ## Installation
 
