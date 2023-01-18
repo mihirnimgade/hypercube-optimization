@@ -95,13 +95,18 @@ cargo test -p hypercube-optimization
 
 ## Current features
 
-- Global optimization over arbitrary n-dimensional search space for arbitrary Rust vector function
-- Built-in time measurement for optimization process
+:heavy_check_mark: Global optimization over arbitrary n-dimensional search space for arbitrary Rust vector function
+
+:heavy_check_mark: Built-in time measurement for optimization process
 
 ## Planned features
 
-- Multithreading in optimizer core
-- Python frontend that calls Rust backend using PyO3
-- Expanded optimization parameter customization
-- Customization for maximum optimization runtime and function evaluations
-- Built-in logging system
+:rocket: Multi-threading in optimizer core
+
+:rocket: Python frontend that calls Rust backend using PyO3
+ 
+:rocket: Expanded optimization parameter customization
+
+:rocket: Customization for maximum optimization runtime and function evaluations
+
+:rocket: Built-in logging system
