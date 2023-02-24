@@ -6,6 +6,8 @@ use crate::evaluation::PointEval;
 use crate::point;
 use crate::point::Point;
 
+use rand::prelude::*;
+
 use crate::bounds::BoundsOverlap;
 
 #[derive(Clone)]
@@ -19,6 +21,7 @@ pub struct Hypercube {
     population: Vec<Point>,
     values: Vec<PointEval>,
     ordered_values: BinaryHeap<PointEval>,
+    rng: ThreadRng,
 }
 
 impl Hypercube {
@@ -41,7 +44,11 @@ impl Hypercube {
         let hypercube_diagonal: Point =
             &point![upper_bound; dimension] - &point![lower_bound; dimension];
 
+        // create thread rng
+        let mut rng = rand::thread_rng();
+
         let random_points = Hypercube::generate_random_points(
+            &mut rng,
             dimension,
             num_points as u64,
             lower_bound,
@@ -65,6 +72,7 @@ impl Hypercube {
             population: random_points,
             values: Vec::with_capacity(population_size as usize),
             ordered_values: BinaryHeap::with_capacity(population_size as usize),
+            rng,
         }
     }
 
@@ -252,6 +260,7 @@ impl Hypercube {
     pub fn randomize_pop(&mut self) {
         // randomize the hypercube's population
         let new_random_points = Hypercube::generate_random_points(
+            &mut self.rng,
             self.dimension,
             self.population_size,
             self.current_bounds.get_lower().min_val().unwrap(),
@@ -267,6 +276,7 @@ impl Hypercube {
 
     /// Generate a vector of random points with a given dimension and within given bounds
     fn generate_random_points(
+        rng: &mut ThreadRng,
         dimension: u32,
         num_points: u64,
         lower_bound: f64,
@@ -282,7 +292,7 @@ impl Hypercube {
 
         for _ in 0..num_points {
             // insert point into random_points vector
-            let point = Point::random(dimension, lower_bound, upper_bound);
+            let point = Point::random(rng, dimension, lower_bound, upper_bound);
             random_points.push(point);
         }
 

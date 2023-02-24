@@ -1,4 +1,3 @@
-use crate::hypercube::Hypercube;
 use crate::point;
 use crate::point::Point;
 

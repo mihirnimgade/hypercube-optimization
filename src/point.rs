@@ -2,7 +2,8 @@ use std::cmp::Ordering;
 use std::ops::{Add, AddAssign, Div, Mul, Sub};
 
 use rand::distributions::Uniform;
-use rand::{thread_rng, Rng};
+use rand::{Rng};
+use rand::prelude::*;
 
 use crate::bounds::HypercubeBounds;
 use std::slice::Iter;
@@ -157,17 +158,16 @@ impl Point {
     }
 
     /// Creates a `Point` with random coordinates within given bounds.
-    pub fn random(dimension: u32, lower: f64, upper: f64) -> Self {
+    pub fn random(rng: &mut ThreadRng, dimension: u32, lower: f64, upper: f64) -> Self {
         assert_ne!(dimension, 0, "vector dimension cannot be zero");
         assert!(
             upper > lower,
             "upper bound not strictly bigger than lower bound"
         );
 
-        let mut rng = thread_rng();
         let uniform_range = Uniform::new_inclusive(lower, upper);
 
-        let random_vec: Vec<f64> = (&mut rng)
+        let random_vec: Vec<f64> = rng
             .sample_iter(uniform_range)
             .take(dimension.try_into().unwrap())
             .collect();
